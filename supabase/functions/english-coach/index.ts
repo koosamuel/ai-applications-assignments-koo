@@ -73,6 +73,7 @@ Deno.serve(async (request) => {
     messages?: Array<{ role?: unknown; content?: unknown }>;
     learner_turns?: unknown;
     current_level?: unknown;
+    translate_korean?: unknown;
   };
   try {
     body = await request.json();
@@ -115,11 +116,18 @@ Deno.serve(async (request) => {
     return json(origin, { error: "server_not_configured" }, 503);
   }
 
+  const translateKorean = body.translate_korean === true;
   const systemPrompt = [
     "You are StepUp English, a supportive CEFR-based conversation coach.",
-    "Reply in this exact structure: Reply, Good, Fix, Next.",
-    "Keep the English conversation to 1-3 sentences.",
-    "Give one specific strength, one priority correction with an example, and one next question.",
+    "Return the requested JSON object and no prose outside it.",
+    "Set translated_input_en to a natural English translation of the latest user message when it is Korean; otherwise preserve its English meaning.",
+    translateKorean
+      ? "The latest input is Korean and must be translated into learner-appropriate natural English."
+      : "Do not invent a translation that changes the latest user's meaning.",
+    "reply_en must use this labeled structure: Reply, Good, Fix, Next.",
+    "Keep the English conversational reply concise and give one strength, one priority correction with an example, and one next question.",
+    "reply_ko must be a faithful, natural Korean translation of reply_en, preserving the four labels.",
+    "evidence must briefly state the observable language features used for coaching.",
     "Do not request personal or sensitive information.",
     "CEFR is an estimate based only on the available conversation sample.",
   ].join("\n");
@@ -136,7 +144,30 @@ Deno.serve(async (request) => {
         { role: "system", content: systemPrompt },
         ...messages,
       ],
-      max_output_tokens: 320,
+      text: {
+        format: {
+          type: "json_schema",
+          name: "english_coach_response",
+          strict: true,
+          schema: {
+            type: "object",
+            properties: {
+              translated_input_en: { type: "string" },
+              reply_en: { type: "string" },
+              reply_ko: { type: "string" },
+              evidence: { type: "string" },
+            },
+            required: [
+              "translated_input_en",
+              "reply_en",
+              "reply_ko",
+              "evidence",
+            ],
+            additionalProperties: false,
+          },
+        },
+      },
+      max_output_tokens: 520,
     }),
   });
 
@@ -147,20 +178,56 @@ Deno.serve(async (request) => {
   }
 
   const result = await response.json();
-  const reply =
+  const outputText =
     result.output_text ??
     result.output
       ?.flatMap((item: { content?: Array<{ type?: string; text?: string }> }) => item.content ?? [])
       .find((item: { type?: string }) => item.type === "output_text")
       ?.text;
 
-  if (typeof reply !== "string" || !reply.trim()) {
+  if (typeof outputText !== "string" || !outputText.trim()) {
     return json(origin, { error: "empty_coach_response" }, 502);
   }
 
+  let structured: {
+    translated_input_en?: unknown;
+    reply_en?: unknown;
+    reply_ko?: unknown;
+    evidence?: unknown;
+  };
+  try {
+    structured = JSON.parse(outputText);
+  } catch {
+    return json(origin, { error: "invalid_coach_response" }, 502);
+  }
+
+  if (
+    typeof structured.translated_input_en !== "string" ||
+    typeof structured.reply_en !== "string" ||
+    typeof structured.reply_ko !== "string" ||
+    typeof structured.evidence !== "string" ||
+    !structured.translated_input_en.trim() ||
+    !structured.reply_en.trim() ||
+    !structured.reply_ko.trim()
+  ) {
+    return json(origin, { error: "invalid_coach_response" }, 502);
+  }
+
+  const translatedInput = structured.translated_input_en.trim();
+  const levelMessages = messages.map((message) => ({ ...message }));
+  for (let index = levelMessages.length - 1; index >= 0; index -= 1) {
+    if (levelMessages[index].role === "user") {
+      levelMessages[index].content = translatedInput;
+      break;
+    }
+  }
+
   return json(origin, {
-    reply: reply.trim(),
-    level: estimateLevel(messages),
+    translated_input_en: translatedInput,
+    reply_en: structured.reply_en.trim(),
+    reply_ko: structured.reply_ko.trim(),
+    evidence: structured.evidence.trim(),
+    level: estimateLevel(levelMessages),
     learner_turns:
       typeof body.learner_turns === "number" ? body.learner_turns : undefined,
   });

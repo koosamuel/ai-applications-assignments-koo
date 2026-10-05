@@ -72,8 +72,12 @@
     .coach-log { display:grid; gap:12px; min-height:250px; max-height:520px; padding:18px; overflow-y:auto; }
     .coach-log .bubble { margin:0; }
     .coach-log .bubble p { white-space:pre-line; }
+    .coach-options { display:flex; flex-wrap:wrap; gap:9px 18px; padding:11px 14px; color:var(--muted); border-top:1px solid var(--line); background:#f3f7f3; font-size:.82rem; }
+    .coach-options label { display:flex; align-items:center; gap:7px; cursor:pointer; }
+    .coach-options input { width:17px; height:17px; accent-color:var(--accent); }
     .coach-form { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; padding:14px; border-top:1px solid var(--line); background:white; }
     .coach-form input { width:100%; min-height:46px; padding:10px 13px; color:var(--ink); border:1px solid #b8c3bd; border-radius:11px; background:white; }
+    .coach-form input::placeholder { color:#7d8883; opacity:.62; }
     .coach-form input:focus { outline:3px solid rgba(15,118,110,.16); border-color:var(--accent); }
     .coach-form button { min-width:88px; border:0; border-radius:11px; color:white; background:var(--accent); font-weight:800; cursor:pointer; }
     .coach-form button:disabled { cursor:wait; opacity:.55; }
@@ -85,6 +89,9 @@
     .bubble { max-width:86%; padding:16px 18px; border-radius:17px; }
     .bubble span { display:block; margin-bottom:5px; font-size:.76rem; font-weight:850; }
     .bubble p { margin:0; }
+    .bubble .translation { margin-top:10px; padding-top:10px; border-top:1px solid rgba(92,107,100,.22); }
+    .bubble .translation small { display:block; margin-bottom:4px; color:inherit; opacity:.72; font-size:.7rem; font-weight:800; }
+    .bubble .translation p { opacity:.9; }
     .bubble.user { justify-self:end; color:white; background:var(--accent); border-bottom-right-radius:4px; }
     .bubble.assistant { background:#eef1ed; border-bottom-left-radius:4px; }
     .result-log,.code-cell pre { overflow:auto; white-space:pre-wrap; word-break:break-word; }
@@ -159,9 +166,13 @@
     <div class="coach-app">
       <div class="coach-topbar"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><span id="coachLevel">현재 추정: A1</span></div>
       <div id="coachLog" class="coach-log" role="log" aria-live="polite" aria-label="StepUp English 대화"></div>
+      <div class="coach-options" aria-label="번역 설정">
+        <label><input id="coachAutoTranslate" type="checkbox" checked> 한국어 입력 자동 영어 변환</label>
+        <label><input id="coachShowKorean" type="checkbox" checked> 코치 답변 한국어 해석 표시</label>
+      </div>
       <form id="coachForm" class="coach-form">
-        <label class="sr-only" for="coachInput">영어 메시지</label>
-        <input id="coachInput" name="message" type="text" maxlength="600" autocomplete="off" placeholder="영어로 메시지를 입력하세요" required>
+        <label class="sr-only" for="coachInput">한국어 또는 영어 메시지</label>
+        <input id="coachInput" name="message" type="text" maxlength="600" autocomplete="off" placeholder="Try: I want to practice English for work." required>
         <button id="coachSend" type="submit">보내기</button>
       </form>
       <div class="coach-quick" aria-label="빠른 명령">
@@ -169,7 +180,7 @@
         <button type="button" data-coach-command="/level">/level</button>
         <button type="button" data-coach-command="/stop">/stop</button>
       </div>
-      <p class="coach-help">Supabase Edge Function이 연결되면 AI 서버 모드로 전환됩니다. 연결 전에는 브라우저의 규칙 기반 데모 코치가 응답합니다.</p>
+      <p class="coach-help">한국어 원문은 화면에 남고 영어 변환문으로 코칭합니다. Supabase 연결 전 로컬 변환은 주요 학습 문장만 지원하며, 연결 후 임의 문장도 AI 서버에서 변환합니다.</p>
     </div>
     <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
     <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
@@ -929,6 +940,8 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
       const coachLog = document.querySelector('#coachLog');
       const coachMode = document.querySelector('#coachMode');
       const coachLevel = document.querySelector('#coachLevel');
+      const coachAutoTranslate = document.querySelector('#coachAutoTranslate');
+      const coachShowKorean = document.querySelector('#coachShowKorean');
       const publicUrl = document.querySelector('meta[name="supabase-url"]').content;
       const publicKey = document.querySelector('meta[name="supabase-publishable-key"]').content;
       const coachMessages = [];
@@ -936,7 +949,24 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
       let currentLevel = 'A1';
       let coachBusy = false;
 
-      function appendCoachMessage(role, content) {
+      function hasHangul(text) {
+        return /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text);
+      }
+
+      function setBubbleTranslation(bubble, labelText, content) {
+        if (!content) return;
+        let translation = bubble.querySelector('.translation');
+        if (!translation) {
+          translation = document.createElement('div');
+          translation.className = 'translation';
+          translation.append(document.createElement('small'), document.createElement('p'));
+          bubble.appendChild(translation);
+        }
+        translation.querySelector('small').textContent = labelText;
+        translation.querySelector('p').textContent = content;
+      }
+
+      function appendCoachMessage(role, content, translation = '', translationLabel = '한국어 해석') {
         const bubble = document.createElement('div');
         bubble.className = 'bubble ' + (role === 'user' ? 'user' : 'assistant');
         const label = document.createElement('span');
@@ -944,8 +974,29 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
         const body = document.createElement('p');
         body.textContent = content;
         bubble.append(label, body);
+        if (translation) setBubbleTranslation(bubble, translationLabel, translation);
         coachLog.appendChild(bubble);
         coachLog.scrollTop = coachLog.scrollHeight;
+        return bubble;
+      }
+
+      function localTranslateKorean(text) {
+        const rules = [
+          [/업무.*영어|영어.*업무|회사.*영어/, 'I want to practice English for work.'],
+          [/회의.*발표|발표.*회의/, 'I want to give a good presentation in a meeting.'],
+          [/회의/, 'I want to practice English for a meeting.'],
+          [/고객|클라이언트/, 'I want to communicate clearly with my client.'],
+          [/여행|공항/, 'I want to practice English for travel.'],
+          [/면접/, 'I want to practice English for a job interview.'],
+          [/자신감/, 'I want to speak English with more confidence.'],
+          [/영어.*연습|연습.*영어/, 'I want to practice speaking English.']
+        ];
+        const matched = rules.find(([pattern]) => pattern.test(text));
+        if (matched) return { text: matched[1], limited: false };
+        return {
+          text: 'I would like to discuss this topic in English.',
+          limited: true
+        };
       }
 
       function estimateLocalLevel() {
@@ -965,20 +1016,35 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
         return 'A1';
       }
 
-      function localCoachReply(text) {
-        const trimmed = text.trim();
-        if (trimmed === '/start') {
+      function localCoachResult(rawText, coachText, translationLimited = false) {
+        const trimmed = coachText.trim();
+        if (rawText === '/start') {
           learnerTurns = 0;
           currentLevel = 'A1';
           coachMessages.length = 0;
           coachLevel.textContent = '현재 추정: A1';
-          return 'Welcome! What topic would you like to discuss, what is your goal, and how much correction do you want: light, standard, or intensive?';
+          return {
+            reply_en: 'Welcome! What topic would you like to discuss, what is your goal, and how much correction do you want: light, standard, or intensive?',
+            reply_ko: '환영합니다! 어떤 주제로 이야기하고 싶은지, 목표는 무엇인지, 교정 강도는 가볍게·보통·집중 중 어느 정도인지 알려주세요.'
+          };
         }
-        if (trimmed === '/level') {
-          return '[현재 CEFR: ' + currentLevel + '] 지금까지의 어휘 범위, 문장 길이와 연결 표현을 기준으로 한 임시 추정입니다.';
+        if (rawText === '/level') {
+          return {
+            reply_en: '[Current CEFR: ' + currentLevel + '] This is a temporary estimate based on your vocabulary range, sentence length, and linking expressions.',
+            reply_ko: '[현재 CEFR: ' + currentLevel + '] 지금까지의 어휘 범위, 문장 길이와 연결 표현을 기준으로 한 임시 추정입니다.'
+          };
         }
-        if (trimmed === '/stop') {
-          return 'Session complete. Good: you kept the conversation moving. Next: reuse one corrected expression in a new topic.';
+        if (rawText === '/stop') {
+          return {
+            reply_en: 'Session complete. Good: you kept the conversation moving. Next: reuse one corrected expression in a new topic.',
+            reply_ko: '세션을 마쳤습니다. 잘한 점: 대화를 계속 이어갔습니다. 다음 목표: 교정받은 표현 하나를 새 주제에서 다시 사용해 보세요.'
+          };
+        }
+        if (hasHangul(trimmed)) {
+          return {
+            reply_en: 'Automatic Korean-to-English conversion is off. Turn it on and send the sentence again.',
+            reply_ko: '한국어 입력 자동 영어 변환이 꺼져 있습니다. 옵션을 켠 뒤 문장을 다시 보내주세요.'
+          };
         }
         learnerTurns += 1;
         const previous = currentLevel;
@@ -989,16 +1055,30 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
           : /travel|airport|trip/i.test(trimmed)
             ? 'That sounds useful. What part of the trip would you like to practise first?'
             : 'That is an interesting point. Could you explain your main reason with one example?';
+        const topicReplyKo = /work|meeting|client/i.test(trimmed)
+          ? '좋습니다. 어떤 결과가 나오면 그 회의가 성공적이었다고 생각하나요?'
+          : /travel|airport|trip/i.test(trimmed)
+            ? '유용한 목표네요. 여행 중 어떤 상황부터 먼저 연습하고 싶나요?'
+            : '흥미로운 생각입니다. 가장 중요한 이유를 예시 하나와 함께 설명해 주시겠어요?';
         const corrected = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).replace(/[.!?]?$/, '.');
         let assessment = '';
+        let assessmentKo = '';
         if (learnerTurns % 3 === 0) {
           assessment = '\n[현재 CEFR: ' + currentLevel + ']';
+          assessmentKo = '\n[현재 CEFR: ' + currentLevel + ']';
           if (previous !== currentLevel) assessment += '\n[수준 변화: ' + previous + ' → ' + currentLevel + '] 문장 길이와 연결 표현의 범위가 달라졌습니다.';
+          if (previous !== currentLevel) assessmentKo += '\n[수준 변화: ' + previous + ' → ' + currentLevel + '] 문장 길이와 연결 표현의 범위가 달라졌습니다.';
         }
-        return 'Reply: ' + topicReply + '\nGood: You communicated a clear idea.\nFix: Try this complete sentence — “' + corrected + '”\nNext: Add one reason or example.' + assessment;
+        const limitNote = translationLimited
+          ? '\n참고: 현재 로컬 영어 변환은 예시 문장입니다. AI 서버 연결 후 원문의 세부 의미까지 반영됩니다.'
+          : '';
+        return {
+          reply_en: 'Reply: ' + topicReply + '\nGood: You communicated a clear idea.\nFix: Try this complete sentence — “' + corrected + '”\nNext: Add one reason or example.' + assessment,
+          reply_ko: '답변: ' + topicReplyKo + '\n잘한 점: 생각을 분명하게 전달했습니다.\n교정: 다음 완성 문장을 사용해 보세요 — “' + corrected + '”\n다음: 이유나 예시를 하나 덧붙여 보세요.' + assessmentKo + limitNote
+        };
       }
 
-      async function serverCoachReply() {
+      async function serverCoachReply(translateKorean) {
         const response = await fetch(publicUrl.replace(/\/$/, '') + '/functions/v1/english-coach', {
           method: 'POST',
           headers: {
@@ -1009,48 +1089,74 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
           body: JSON.stringify({
             messages: coachMessages.slice(-16),
             learner_turns: learnerTurns,
-            current_level: currentLevel
+            current_level: currentLevel,
+            translate_korean: translateKorean
           })
         });
         if (!response.ok) throw new Error('Coach server returned ' + response.status);
         const data = await response.json();
-        if (!data.reply) throw new Error('Coach server response is empty');
+        if (!data.reply_en && !data.reply) throw new Error('Coach server response is empty');
         if (data.level) {
           currentLevel = data.level;
           coachLevel.textContent = '현재 추정: ' + currentLevel;
         }
-        return data.reply;
+        return data;
       }
 
       async function submitCoachMessage(raw) {
         const text = raw.trim();
         if (!text || coachBusy) return;
-        appendCoachMessage('user', text);
+        const isCommand = text.startsWith('/');
+        const translateKorean = !isCommand && coachAutoTranslate.checked && hasHangul(text);
+        const userBubble = appendCoachMessage('user', text);
+        const messageIndex = coachMessages.length;
         coachMessages.push({ role: 'user', content: text });
         coachBusy = true;
         coachSend.disabled = true;
         coachInput.disabled = true;
-        let reply;
+        let result;
+        const runLocal = () => {
+          let coachText = text;
+          let translationLimited = false;
+          if (translateKorean) {
+            const translated = localTranslateKorean(text);
+            coachText = translated.text;
+            translationLimited = translated.limited;
+            setBubbleTranslation(
+              userBubble,
+              translated.limited ? '영어 변환 · 로컬 예시' : '영어 변환',
+              coachText
+            );
+          }
+          coachMessages[messageIndex].content = coachText;
+          return localCoachResult(text, coachText, translationLimited);
+        };
         try {
-          if (publicUrl && publicKey && !text.startsWith('/')) {
+          if (publicUrl && publicKey && !isCommand) {
             coachMode.textContent = 'AI 서버 모드';
             coachMode.className = 'coach-mode online';
             learnerTurns += 1;
-            reply = await serverCoachReply();
+            result = await serverCoachReply(translateKorean);
+            if (translateKorean && result.translated_input_en) {
+              coachMessages[messageIndex].content = result.translated_input_en;
+              setBubbleTranslation(userBubble, '영어 변환', result.translated_input_en);
+            }
           } else {
             coachMode.textContent = publicUrl && publicKey ? '명령 처리 · 로컬' : '로컬 데모 모드';
             coachMode.className = 'coach-mode';
-            reply = localCoachReply(text);
+            result = runLocal();
           }
         } catch (error) {
           console.warn('Coach server unavailable; using local demo.', error);
           coachMode.textContent = '서버 연결 실패 · 로컬 데모';
           coachMode.className = 'coach-mode degraded';
-          if (!text.startsWith('/')) learnerTurns = Math.max(0, learnerTurns - 1);
-          reply = localCoachReply(text);
+          if (!isCommand) learnerTurns = Math.max(0, learnerTurns - 1);
+          result = runLocal();
         }
-        coachMessages.push({ role: 'assistant', content: reply });
-        appendCoachMessage('assistant', reply);
+        const replyEnglish = result.reply_en || result.reply;
+        const replyKorean = coachShowKorean.checked ? (result.reply_ko || '') : '';
+        coachMessages.push({ role: 'assistant', content: replyEnglish });
+        appendCoachMessage('assistant', replyEnglish, replyKorean);
         coachBusy = false;
         coachSend.disabled = false;
         coachInput.disabled = false;
@@ -1066,7 +1172,11 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
       document.querySelectorAll('[data-coach-command]').forEach(button => {
         button.addEventListener('click', () => submitCoachMessage(button.dataset.coachCommand));
       });
-      appendCoachMessage('assistant', 'Hello! Press /start or write a sentence in English to begin.');
+      appendCoachMessage(
+        'assistant',
+        'Hello! Press /start or write a sentence in Korean or English to begin.',
+        '안녕하세요! /start를 누르거나 한국어 또는 영어로 문장을 입력해 시작하세요.'
+      );
 
       const syncDot = document.querySelector('#syncDot');
       const syncStatus = document.querySelector('#syncStatus');

@@ -63,6 +63,8 @@ Publishable Key는 브라우저 공개용 키다. 데이터베이스 비밀번�
 
 - Supabase 연결 전에는 팀과제 탭에서 로컬 규칙 기반 데모 코치가 입력에 응답한다.
 - 연결 후에는 `supabase/functions/english-coach`가 OpenAI API를 호출한다.
+- 한국어 입력 자동 변환을 켜면 원문 아래에 영어 변환문을 표시하고, 영어 코치 답변 아래에는 한국어 해석을 표시한다.
+- 서버는 Responses API Structured Outputs로 `translated_input_en`, `reply_en`, `reply_ko`, `evidence`를 반환한다.
 - OpenAI API 키는 브라우저나 Git에 넣지 않고 Edge Function Secret으로만 설정한다.
 - 대화 본문은 기본적으로 데이터베이스에 저장하지 않는다.
 
