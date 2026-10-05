@@ -1,7 +1,7 @@
 {
-  "name": "AI응용 개인과제 통합",
+  "name": "AI응용 개인·팀과제 통합",
   "short_name": "AI응용 과제",
-  "description": "개인과제 1·3·4·5·6의 구현과 실행 결과",
+  "description": "개인과제 1·3·4·5·6과 팀과제 2의 구현 및 실행 결과",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",

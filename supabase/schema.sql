@@ -5,7 +5,7 @@ create table if not exists public.assignment_editors (
 
 create table if not exists public.assignment_sections (
   assignment_key text primary key
-    check (assignment_key in ('task1', 'task3', 'task4', 'task5', 'task6')),
+    check (assignment_key in ('task1', 'team', 'task3', 'task4', 'task5', 'task6')),
   title text not null,
   status_label text not null,
   summary text not null,
@@ -100,6 +100,7 @@ insert into public.assignment_sections
   (assignment_key, title, status_label, summary, headline_metric, published)
 values
   ('task1', '초개인화 금융상품 추천', '로컬 검증 완료', '개인정보 외부 전송 없이 추천 기준선을 비교했습니다.', '20/20 개선 규칙 일치', true),
+  ('team', 'StepUp English 회화 챗봇', '실제 팀 검증 대기', 'CEFR 적응형 회화 흐름과 B2→C1 합성 시나리오를 구현했습니다.', '합성 시나리오 3개', true),
   ('task3', '그림·감정 기반 이야기 생성', 'API 실행 완료', '그림 4장과 행복 감정으로 민들레 이야기를 생성했습니다.', '캡션 4개·이야기 1편', true),
   ('task4', '역사적 인물 챗봇', '3턴 검증 완료', '아인슈타인 페르소나와 사실 경계를 적용했습니다.', '대화 3턴', true),
   ('task5', '텍스트 쿼리 이미지 검색', '검색 검증 완료', '세 질의 모두 정답 이미지를 1위로 반환했습니다.', 'Top-1 3/3', true),
