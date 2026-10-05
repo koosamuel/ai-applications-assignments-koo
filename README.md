@@ -58,3 +58,21 @@ Publishable Key는 브라우저 공개용 키다. 데이터베이스 비밀번�
 - 연결되면 `assignment_sections`의 공개 행을 읽고 변경 사항을 Realtime으로 반영한다.
 - 쓰기는 `assignment_editors`에 등록된 인증 사용자만 RLS를 통과한다.
 - 서비스워커는 동일 출처의 앱 셸을 캐시하고, Supabase·CDN 요청은 네트워크에서 처리한다.
+
+## 팀과제 대화형 챗봇
+
+- Supabase 연결 전에는 팀과제 탭에서 로컬 규칙 기반 데모 코치가 입력에 응답한다.
+- 연결 후에는 `supabase/functions/english-coach`가 OpenAI API를 호출한다.
+- OpenAI API 키는 브라우저나 Git에 넣지 않고 Edge Function Secret으로만 설정한다.
+- 대화 본문은 기본적으로 데이터베이스에 저장하지 않는다.
+
+Supabase CLI에서 전용 프로젝트를 연결한 뒤 아래 순서로 배포한다.
+
+```bash
+supabase link --project-ref YOUR_PROJECT_REF
+supabase secrets set OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+supabase secrets set ALLOWED_ORIGINS=https://ai-applications-assignments-koo.koosamuel1.chatgpt.site
+supabase functions deploy english-coach --no-verify-jwt
+```
+
+`YOUR_OPENAI_API_KEY`는 문서·HTML·셸 기록에 남기지 말고 안전한 로컬 환경에서 직접 입력한다. 외부 공개 전에는 호출량 제한과 비용 상한을 추가한다.

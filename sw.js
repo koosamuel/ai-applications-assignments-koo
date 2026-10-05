@@ -1,4 +1,4 @@
-const CACHE_NAME = "ai-assignments-v2";
+const CACHE_NAME = "ai-assignments-v3";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

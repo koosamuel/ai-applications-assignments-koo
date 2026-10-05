@@ -64,6 +64,24 @@
     .check-list { display:grid; gap:7px; padding-left:22px; }
     .check-list li::marker { color:var(--accent); }
     .chat { display:grid; gap:13px; margin:26px 0; }
+    .coach-app { margin:18px 0 26px; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:#f7faf7; }
+    .coach-topbar { display:flex; justify-content:space-between; gap:12px; padding:12px 16px; color:var(--muted); background:#e9f1ec; font-size:.82rem; font-weight:750; }
+    .coach-mode { color:var(--accent); }
+    .coach-mode.online { color:#08745f; }
+    .coach-mode.degraded { color:#9a6511; }
+    .coach-log { display:grid; gap:12px; min-height:250px; max-height:520px; padding:18px; overflow-y:auto; }
+    .coach-log .bubble { margin:0; }
+    .coach-log .bubble p { white-space:pre-line; }
+    .coach-form { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; padding:14px; border-top:1px solid var(--line); background:white; }
+    .coach-form input { width:100%; min-height:46px; padding:10px 13px; color:var(--ink); border:1px solid #b8c3bd; border-radius:11px; background:white; }
+    .coach-form input:focus { outline:3px solid rgba(15,118,110,.16); border-color:var(--accent); }
+    .coach-form button { min-width:88px; border:0; border-radius:11px; color:white; background:var(--accent); font-weight:800; cursor:pointer; }
+    .coach-form button:disabled { cursor:wait; opacity:.55; }
+    .coach-quick { display:flex; gap:8px; padding:0 14px 12px; background:white; }
+    .coach-quick button { padding:6px 10px; color:var(--accent); border:1px solid #add4ca; border-radius:999px; background:#eff9f5; cursor:pointer; }
+    .coach-help { margin:0; padding:12px 16px; color:var(--muted); border-top:1px solid var(--line); font-size:.8rem; }
+    .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
+
     .bubble { max-width:86%; padding:16px 18px; border-radius:17px; }
     .bubble span { display:block; margin-bottom:5px; font-size:.76rem; font-weight:850; }
     .bubble p { margin:0; }
@@ -137,9 +155,24 @@
     <div class="metrics"><article class="metric"><span class="metric-label">합성 시나리오</span><strong>3개</strong><small>A1·B1·B2→C1</small></article><article class="metric"><span class="metric-label">학습자 발화</span><strong>18회</strong><small>시나리오당 6회</small></article><article class="metric"><span class="metric-label">수준 변화</span><strong>B2→C1</strong><small>합성 기능 검증</small></article></div>
     <h3>상호작용 흐름</h3>
     <ol class="steps"><li>/start로 목표·주제·교정 강도 설정</li><li>영어 응답과 핵심 교정 1개 제공</li><li>매 3번째 발화 뒤 CEFR 추정</li><li>수준 변화와 관찰 근거 안내</li><li>/stop으로 세션 요약과 다음 목표 제시</li></ol>
-    <h3>B2에서 C1 변화 시나리오</h3>
-    <div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div>
-    <div class="notice"><strong>현재 데이터 경계</strong><p>화면의 대화는 기능 검증용 합성 자료입니다. 팀명·참여자·실제 사용 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
+    <h3>직접 대화해보기</h3>
+    <div class="coach-app">
+      <div class="coach-topbar"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><span id="coachLevel">현재 추정: A1</span></div>
+      <div id="coachLog" class="coach-log" role="log" aria-live="polite" aria-label="StepUp English 대화"></div>
+      <form id="coachForm" class="coach-form">
+        <label class="sr-only" for="coachInput">영어 메시지</label>
+        <input id="coachInput" name="message" type="text" maxlength="600" autocomplete="off" placeholder="영어로 메시지를 입력하세요" required>
+        <button id="coachSend" type="submit">보내기</button>
+      </form>
+      <div class="coach-quick" aria-label="빠른 명령">
+        <button type="button" data-coach-command="/start">/start</button>
+        <button type="button" data-coach-command="/level">/level</button>
+        <button type="button" data-coach-command="/stop">/stop</button>
+      </div>
+      <p class="coach-help">Supabase Edge Function이 연결되면 AI 서버 모드로 전환됩니다. 연결 전에는 브라우저의 규칙 기반 데모 코치가 응답합니다.</p>
+    </div>
+    <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
+    <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
     <details class="code-details"><summary>개선 프롬프트 보기 <span>CEFR 적응형 코치</span></summary><div class="code-cell"><span class="cell-label">PROMPT</span><pre><code>당신은 이름이 StepUp English인 CEFR 기반 영어 회화 코치다.
 
 시작과 종료:
@@ -889,6 +922,151 @@ print(&quot;검증 완료: PDF 9편, 초록 추출, 임베딩, k=3, 군집 목�
       });
       const initial = location.hash.slice(1);
       if (tabs.some(tab => tab.dataset.tab === initial)) activate(initial);
+
+      const coachForm = document.querySelector('#coachForm');
+      const coachInput = document.querySelector('#coachInput');
+      const coachSend = document.querySelector('#coachSend');
+      const coachLog = document.querySelector('#coachLog');
+      const coachMode = document.querySelector('#coachMode');
+      const coachLevel = document.querySelector('#coachLevel');
+      const publicUrl = document.querySelector('meta[name="supabase-url"]').content;
+      const publicKey = document.querySelector('meta[name="supabase-publishable-key"]').content;
+      const coachMessages = [];
+      let learnerTurns = 0;
+      let currentLevel = 'A1';
+      let coachBusy = false;
+
+      function appendCoachMessage(role, content) {
+        const bubble = document.createElement('div');
+        bubble.className = 'bubble ' + (role === 'user' ? 'user' : 'assistant');
+        const label = document.createElement('span');
+        label.textContent = role === 'user' ? '학습자' : 'StepUp English';
+        const body = document.createElement('p');
+        body.textContent = content;
+        bubble.append(label, body);
+        coachLog.appendChild(bubble);
+        coachLog.scrollTop = coachLog.scrollHeight;
+      }
+
+      function estimateLocalLevel() {
+        const text = coachMessages
+          .filter(item => item.role === 'user')
+          .map(item => item.content)
+          .join(' ');
+        const words = text.trim().split(/\s+/).filter(Boolean);
+        const advanced = (text.match(/\b(however|therefore|although|whereas|consequently|preserve|evaluate|accessible|overreliance)\b/gi) || []).length;
+        const longSentences = text
+          .split(/[.!?]/)
+          .filter(part => part.trim().split(/\s+/).filter(Boolean).length >= 12).length;
+        if (words.length >= 85 && advanced >= 3 && longSentences >= 2) return 'C1';
+        if (words.length >= 55 && advanced >= 2) return 'B2';
+        if (words.length >= 30) return 'B1';
+        if (words.length >= 12) return 'A2';
+        return 'A1';
+      }
+
+      function localCoachReply(text) {
+        const trimmed = text.trim();
+        if (trimmed === '/start') {
+          learnerTurns = 0;
+          currentLevel = 'A1';
+          coachMessages.length = 0;
+          coachLevel.textContent = '현재 추정: A1';
+          return 'Welcome! What topic would you like to discuss, what is your goal, and how much correction do you want: light, standard, or intensive?';
+        }
+        if (trimmed === '/level') {
+          return '[현재 CEFR: ' + currentLevel + '] 지금까지의 어휘 범위, 문장 길이와 연결 표현을 기준으로 한 임시 추정입니다.';
+        }
+        if (trimmed === '/stop') {
+          return 'Session complete. Good: you kept the conversation moving. Next: reuse one corrected expression in a new topic.';
+        }
+        learnerTurns += 1;
+        const previous = currentLevel;
+        currentLevel = estimateLocalLevel();
+        coachLevel.textContent = '현재 추정: ' + currentLevel;
+        const topicReply = /work|meeting|client/i.test(trimmed)
+          ? 'That makes sense. What outcome would make the meeting successful?'
+          : /travel|airport|trip/i.test(trimmed)
+            ? 'That sounds useful. What part of the trip would you like to practise first?'
+            : 'That is an interesting point. Could you explain your main reason with one example?';
+        const corrected = trimmed.charAt(0).toUpperCase() + trimmed.slice(1).replace(/[.!?]?$/, '.');
+        let assessment = '';
+        if (learnerTurns % 3 === 0) {
+          assessment = '\n[현재 CEFR: ' + currentLevel + ']';
+          if (previous !== currentLevel) assessment += '\n[수준 변화: ' + previous + ' → ' + currentLevel + '] 문장 길이와 연결 표현의 범위가 달라졌습니다.';
+        }
+        return 'Reply: ' + topicReply + '\nGood: You communicated a clear idea.\nFix: Try this complete sentence — “' + corrected + '”\nNext: Add one reason or example.' + assessment;
+      }
+
+      async function serverCoachReply() {
+        const response = await fetch(publicUrl.replace(/\/$/, '') + '/functions/v1/english-coach', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'apikey': publicKey,
+            'Authorization': 'Bearer ' + publicKey
+          },
+          body: JSON.stringify({
+            messages: coachMessages.slice(-16),
+            learner_turns: learnerTurns,
+            current_level: currentLevel
+          })
+        });
+        if (!response.ok) throw new Error('Coach server returned ' + response.status);
+        const data = await response.json();
+        if (!data.reply) throw new Error('Coach server response is empty');
+        if (data.level) {
+          currentLevel = data.level;
+          coachLevel.textContent = '현재 추정: ' + currentLevel;
+        }
+        return data.reply;
+      }
+
+      async function submitCoachMessage(raw) {
+        const text = raw.trim();
+        if (!text || coachBusy) return;
+        appendCoachMessage('user', text);
+        coachMessages.push({ role: 'user', content: text });
+        coachBusy = true;
+        coachSend.disabled = true;
+        coachInput.disabled = true;
+        let reply;
+        try {
+          if (publicUrl && publicKey && !text.startsWith('/')) {
+            coachMode.textContent = 'AI 서버 모드';
+            coachMode.className = 'coach-mode online';
+            learnerTurns += 1;
+            reply = await serverCoachReply();
+          } else {
+            coachMode.textContent = publicUrl && publicKey ? '명령 처리 · 로컬' : '로컬 데모 모드';
+            coachMode.className = 'coach-mode';
+            reply = localCoachReply(text);
+          }
+        } catch (error) {
+          console.warn('Coach server unavailable; using local demo.', error);
+          coachMode.textContent = '서버 연결 실패 · 로컬 데모';
+          coachMode.className = 'coach-mode degraded';
+          if (!text.startsWith('/')) learnerTurns = Math.max(0, learnerTurns - 1);
+          reply = localCoachReply(text);
+        }
+        coachMessages.push({ role: 'assistant', content: reply });
+        appendCoachMessage('assistant', reply);
+        coachBusy = false;
+        coachSend.disabled = false;
+        coachInput.disabled = false;
+        coachInput.focus();
+      }
+
+      coachForm.addEventListener('submit', event => {
+        event.preventDefault();
+        const value = coachInput.value;
+        coachInput.value = '';
+        submitCoachMessage(value);
+      });
+      document.querySelectorAll('[data-coach-command]').forEach(button => {
+        button.addEventListener('click', () => submitCoachMessage(button.dataset.coachCommand));
+      });
+      appendCoachMessage('assistant', 'Hello! Press /start or write a sentence in English to begin.');
 
       const syncDot = document.querySelector('#syncDot');
       const syncStatus = document.querySelector('#syncStatus');
