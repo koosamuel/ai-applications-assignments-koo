@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parent / "dist"
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="AI응용 개인과제 통합 웹 서버")
+    parser = argparse.ArgumentParser(description="AI응용 개인·팀과제 통합 웹 서버")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", default=8765, type=int)
     args = parser.parse_args()

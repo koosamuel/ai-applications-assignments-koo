@@ -1,4 +1,4 @@
-# AI응용 개인과제 통합 웹
+# AI응용 개인·팀과제 통합 웹
 
 공훈의 교수님 어린이 작가 프로젝트와 같은 정적 배포 구조를 사용한다.
 
@@ -18,7 +18,7 @@
 ## 생성과 실행
 
 ```bash
-/opt/anaconda3/bin/python ../scripts/build_personal_assignments_html.py
+/opt/anaconda3/bin/python ../01_구현관리/scripts/build_personal_assignments_html.py
 ./scripts/build-static.sh
 /opt/anaconda3/bin/python server.py --port 8765
 ```
@@ -39,7 +39,7 @@ export SUPABASE_PUBLISHABLE_KEY="YOUR_PUBLIC_PUBLISHABLE_KEY"
 4. 통합 HTML과 `dist`를 다시 생성한다.
 
 ```bash
-/opt/anaconda3/bin/python ../scripts/build_personal_assignments_html.py
+/opt/anaconda3/bin/python ../01_구현관리/scripts/build_personal_assignments_html.py
 ./scripts/build-static.sh
 ```
 
