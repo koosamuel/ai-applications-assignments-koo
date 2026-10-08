@@ -313,8 +313,8 @@ async function coach(request, env) {
     "Base the next question on the final learner message. If it names a topic such as music, ask about that exact topic rather than switching topics.",
     "For an ordinary turn, use one short direct acknowledgment and one related question. Avoid formulaic repetition such as 'Thanks for sharing that.'",
     "reply_ko must be natural Korean learning support that matches reply_en, not a word-for-word translation.",
-    "answer_frame_en must be one short blank-based sentence frame for the current question, using ___ for learner choices; never provide a complete personal answer.",
-    "answer_frame_ko must briefly explain what to put in the blanks. evidence must contain only short observable features.",
+    "answer_frame_en must be one complete, natural, privacy-safe example answer to the current question. Do not use blanks, underscores, brackets, or placeholders.",
+    "answer_frame_ko must briefly explain that it is a complete example the learner may adapt. evidence must contain only short observable features.",
   ].join("\n");
   const learnerTranscript = messages
     .filter((message) => message.role === "user")
