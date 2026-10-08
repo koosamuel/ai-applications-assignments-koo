@@ -14,7 +14,7 @@
     :root { --ink:#16211d; --muted:#5c6b64; --paper:#f6f5ef; --surface:#fffef9; --line:#d9ddd5; --accent:#0f766e; --accent-soft:#dff3ef; --gold:#b7791f; --shadow:0 18px 50px rgba(31,45,38,.10); }
     * { box-sizing:border-box; }
     html { scroll-behavior:smooth; }
-    body { margin:0; color:var(--ink); background:radial-gradient(circle at 15% 0%,#e9f3ef 0,transparent 32rem),var(--paper); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; line-height:1.65; }
+    body { margin:0; overflow-x:hidden; color:var(--ink); background:radial-gradient(circle at 15% 0%,#e9f3ef 0,transparent 32rem),var(--paper); font-family:-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Noto Sans KR",sans-serif; line-height:1.65; }
     button,summary { font:inherit; }
     .shell { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:44px 0 72px; }
     header { display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:26px; }
@@ -109,8 +109,8 @@
     th { color:#385048; background:#edf3ef; }
     tr:last-child td { border-bottom:0; }
     .id-chip { color:var(--accent); font-weight:850; }
-    .steps { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; padding:0; list-style:none; counter-reset:step; }
-    .steps li { position:relative; padding:42px 15px 15px; border:1px solid var(--line); border-radius:13px; background:#fbfcf8; }
+    .steps { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; padding:0; list-style:none; counter-reset:step; }
+    .steps li { position:relative; min-width:0; padding:42px 15px 15px; overflow-wrap:anywhere; word-break:keep-all; border:1px solid var(--line); border-radius:13px; background:#fbfcf8; }
     .steps li:before { counter-increment:step; content:counter(step); position:absolute; top:12px; left:15px; width:23px; height:23px; display:grid; place-items:center; color:white; background:var(--accent); border-radius:50%; font-size:.75rem; font-weight:800; }
     .image-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:14px; }
     .image-card { margin:0; overflow:hidden; border:1px solid var(--line); border-radius:16px; background:#fff; }
@@ -124,25 +124,42 @@
     .check-list { display:grid; gap:7px; padding-left:22px; }
     .check-list li::marker { color:var(--accent); }
     .chat { display:grid; gap:13px; margin:26px 0; }
-    .coach-app { margin:18px 0 26px; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:#f7faf7; }
-    .coach-topbar { display:flex; justify-content:space-between; gap:12px; padding:12px 16px; color:var(--muted); background:#e9f1ec; font-size:.82rem; font-weight:750; }
+    .primary-action-heading { margin-top:8px; }
+    .coach-intro { margin:-4px 0 14px; color:var(--muted); }
+    .coach-app { margin:14px 0 26px; overflow:hidden; border:1px solid #c8d5cf; border-radius:18px; background:#f7faf7; box-shadow:0 10px 30px rgba(31,45,38,.07); }
+    .coach-topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:13px 16px; color:var(--muted); background:#e9f1ec; font-size:.82rem; font-weight:750; }
+    .coach-server-state,.coach-level-state { display:grid; gap:3px; min-width:0; }
+    .coach-server-state small { color:#56675f; font-size:.72rem; font-weight:650; }
+    .coach-level-state { justify-items:end; width:min(300px,48%); }
+    .coach-level-state progress { width:100%; height:8px; overflow:hidden; border:0; border-radius:999px; background:#ccd8d2; accent-color:var(--accent); }
+    .coach-level-state progress::-webkit-progress-bar { background:#ccd8d2; border-radius:999px; }
+    .coach-level-state progress::-webkit-progress-value { background:var(--accent); border-radius:999px; }
     .coach-mode { color:var(--accent); }
     .coach-mode.online { color:#08745f; }
-    .coach-mode.degraded { color:#9a6511; }
-    .coach-log { display:grid; gap:12px; min-height:250px; max-height:520px; padding:18px; overflow-y:auto; }
-    .coach-log .bubble { margin:0; }
+    .coach-mode.degraded { color:#815000; }
+    .coach-log { display:grid; align-content:start; grid-auto-rows:max-content; gap:12px; min-height:250px; max-height:520px; padding:18px; overflow-y:auto; overscroll-behavior:contain; }
+    .coach-log .bubble { width:fit-content; max-width:min(78%,72ch); min-width:0; margin:0; overflow-wrap:anywhere; }
     .coach-log .bubble p { white-space:pre-line; }
     .coach-options { display:flex; flex-wrap:wrap; gap:9px 18px; padding:11px 14px; color:var(--muted); border-top:1px solid var(--line); background:#f3f7f3; font-size:.82rem; }
-    .coach-options label { display:flex; align-items:center; gap:7px; cursor:pointer; }
+    .coach-options label { display:flex; align-items:center; min-height:44px; gap:8px; cursor:pointer; }
     .coach-options input { width:17px; height:17px; accent-color:var(--accent); }
-    .coach-form { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; padding:14px; border-top:1px solid var(--line); background:white; }
-    .coach-form input { width:100%; min-height:46px; padding:10px 13px; color:var(--ink); border:1px solid #b8c3bd; border-radius:11px; background:white; }
-    .coach-form input::placeholder { color:#7d8883; opacity:.62; }
-    .coach-form input:focus { outline:3px solid rgba(15,118,110,.16); border-color:var(--accent); }
-    .coach-form button { min-width:88px; border:0; border-radius:11px; color:white; background:var(--accent); font-weight:800; cursor:pointer; }
+    .coach-composer { border-top:1px solid var(--line); background:white; }
+    .coach-form { display:grid; gap:8px; padding:14px 14px 9px; }
+    .coach-input-head,.coach-input-meta { display:flex; align-items:center; justify-content:space-between; gap:12px; color:#596a62; font-size:.75rem; }
+    .coach-input-head label { color:var(--ink); font-size:.84rem; font-weight:850; }
+    .coach-input-head kbd { padding:1px 5px; color:#405048; border:1px solid #b8c3bd; border-bottom-width:2px; border-radius:5px; background:#f7f9f7; font:inherit; }
+    .coach-input-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:9px; align-items:stretch; }
+    .coach-form textarea { width:100%; min-height:54px; max-height:156px; resize:none; padding:11px 13px; color:var(--ink); border:1px solid #9fada6; border-radius:11px; background:white; font:inherit; line-height:1.5; }
+    .coach-form textarea::placeholder { color:#58665f; opacity:1; }
+    .coach-form textarea:focus { outline:3px solid rgba(15,118,110,.2); border-color:var(--accent); }
+    .coach-form button { min-width:92px; min-height:54px; padding:0 18px; border:0; border-radius:11px; color:white; background:var(--accent); font-weight:800; cursor:pointer; }
     .coach-form button:disabled { cursor:wait; opacity:.55; }
-    .coach-quick { display:flex; gap:8px; padding:0 14px 12px; background:white; }
-    .coach-quick button { padding:6px 10px; color:var(--accent); border:1px solid #add4ca; border-radius:999px; background:#eff9f5; cursor:pointer; }
+    .coach-input-meta #coachCounter { flex:0 0 auto; font-variant-numeric:tabular-nums; }
+    .coach-starters,.coach-quick { display:flex; flex-wrap:wrap; align-items:center; gap:8px; padding:0 14px 10px; background:white; }
+    .coach-starters > span { margin-right:2px; color:#596a62; font-size:.75rem; font-weight:800; }
+    .coach-starters button,.coach-quick button { min-height:44px; padding:8px 12px; color:var(--accent); border:1px solid #95c7bc; border-radius:999px; background:#eff9f5; cursor:pointer; font-weight:750; }
+    .coach-quick { padding-bottom:14px; }
+    .coach-quick button { color:#385149; border-color:#c0ccc6; background:#f7f9f7; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
     .coach-help { margin:0; padding:12px 16px; color:var(--muted); border-top:1px solid var(--line); font-size:.8rem; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
@@ -154,6 +171,8 @@
     .bubble .translation p { opacity:.9; }
     .bubble.user { justify-self:end; color:white; background:var(--accent); border-bottom-right-radius:4px; }
     .bubble.assistant { background:#eef1ed; border-bottom-left-radius:4px; }
+    .bubble.level-card { border:1px solid #9fcfc4; background:#edf8f5; box-shadow:inset 4px 0 0 var(--accent); }
+    button:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible { outline:3px solid rgba(15,118,110,.28); outline-offset:3px; }
     .result-log,.code-cell pre { overflow:auto; white-space:pre-wrap; word-break:break-word; }
     .result-log { padding:18px; color:#d8f7ec; background:#10231d; border-radius:14px; font-size:.86rem; }
     .cluster-layout { display:grid; grid-template-columns:minmax(0,1.08fr) minmax(280px,.92fr); gap:20px; align-items:start; }
@@ -178,7 +197,10 @@
     .live-update p { margin:4px 0; }
     .live-update time { color:var(--muted); font-size:.78rem; }
     footer { padding:24px 4px 0; color:var(--muted); font-size:.84rem; text-align:center; }
-    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:0 0 210px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} }
+    @media (max-width:900px) { .steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
+    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} }
+    @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-starters,.coach-quick{gap:7px} .coach-starters button,.coach-quick button{flex:1 0 auto} }
+    @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important} }
     @media print { body{background:white} .shell{width:100%;padding:0} .tabs,.assignment-tabs,.dataset-tabs{display:none} [data-panel]{display:block!important;break-before:page;box-shadow:none;border:0;padding:20px 0} [data-panel]:first-of-type{break-before:auto} .assignment-view,.dataset-panel{display:block!important} .prompt-details:not([open]) > :not(summary){display:block!important} .code-details{display:none} footer{display:none} }
   </style>
 </head>
@@ -186,9 +208,8 @@
   <main class="shell">
     <header><div class="brand"><p>AI응용 · 팀과제 포트폴리오</p><h1>1조</h1></div><div class="byline">팀과제 2 · StepUp English<br>Part 1 후보 프롬프트 v0</div></header>
     <div class="sync-strip" role="status" aria-live="polite"><span class="sync-dot" id="syncDot"></span><span id="syncStatus">정적 스냅샷</span><time id="syncUpdated"></time></div>
-    <nav class="tabs" role="tablist" aria-label="과제 선택"><button role="tab" id="tab-team" aria-controls="panel-team" aria-selected="true" tabindex="0" data-tab="team">팀과제</button></nav>
-    <section role="tabpanel" id="panel-team" aria-labelledby="tab-team" data-panel="team" >
-    <div class="section-head"><div><p class="eyebrow">팀과제 · CEFR Adaptive Coach</p><h2>StepUp English 회화 챗봇</h2></div><span class="status caution">실제 팀 검증 대기</span></div>
+    <section id="panel-team" aria-labelledby="team-title" data-panel="team">
+    <div class="section-head"><div><p class="eyebrow">팀과제 · CEFR Adaptive Coach</p><h2 id="team-title">StepUp English 회화 챗봇</h2></div><span class="status caution">실제 팀 검증 대기</span></div>
     <p class="lead">학습자 발화를 바탕으로 CEFR 수준을 주기적으로 추정하고, 수준 변화 알림·핵심 교정·다음 질문을 제공하는 적응형 영어 회화 코치입니다.</p>
 
     <nav class="assignment-tabs" role="tablist" aria-label="과제 세부 보기">
@@ -197,30 +218,45 @@
     </nav>
     <section class="assignment-view" role="tabpanel" id="team-panel-results" aria-labelledby="team-tab-results" data-assignment="team" data-assignment-panel="results">
 
-      <div class="metrics"><article class="metric"><span class="metric-label">합성 시나리오</span><strong>3개</strong><small>A1·B1·B2→C1</small></article><article class="metric"><span class="metric-label">학습자 발화</span><strong>18회</strong><small>시나리오당 6회</small></article><article class="metric"><span class="metric-label">수준 변화</span><strong>B2→C1</strong><small>합성 기능 검증</small></article></div>
-      <h3>상호작용 흐름</h3>
-      <ol class="steps"><li>/start로 목표·주제·한국어 지원 수준 설정</li><li>독립 영어 응답 6개 수집</li><li>최초 CEFR 잠정 추정</li><li>이후 5개 응답마다 근거 기반 재평가</li><li>/end로 한계가 포함된 세션 보고서 생성</li></ol>
-      <h3>직접 대화해보기</h3>
+      <h3 class="primary-action-heading">직접 대화해보기</h3>
+      <p class="coach-intro">먼저 <code>/start</code>로 세션을 시작하세요. 설정이 끝나면 아래 예시를 선택해 입력 문장을 준비할 수 있으며, 예시는 자동 전송되지 않습니다.</p>
       <div class="coach-app">
-        <div class="coach-topbar"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><span id="coachLevel">현재 추정: 산정 중</span></div>
+        <div class="coach-topbar">
+          <div class="coach-server-state"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><small>서버 장애 시에도 연습을 계속합니다</small></div>
+          <div class="coach-level-state"><span id="coachLevel">현재 추정: 산정 중</span><progress id="coachProgress" max="6" value="0" aria-label="CEFR 최초 추정 진행도"></progress></div>
+        </div>
         <div id="coachLog" class="coach-log" role="log" aria-live="polite" aria-label="StepUp English 대화"></div>
         <div class="coach-options" aria-label="번역 설정">
           <label><input id="coachAutoTranslate" type="checkbox" checked> 한국어 입력 자동 영어 변환</label>
           <label><input id="coachShowKorean" type="checkbox" checked> 코치 답변 한국어 해석 표시</label>
         </div>
-        <form id="coachForm" class="coach-form">
-          <label class="sr-only" for="coachInput">한국어 또는 영어 메시지</label>
-          <input id="coachInput" name="message" type="text" maxlength="600" autocomplete="off" placeholder="Try: I want to practice English for work." required>
-          <button id="coachSend" type="submit">보내기</button>
-        </form>
-        <div class="coach-quick" aria-label="빠른 명령">
-          <button type="button" data-coach-command="/start">/start</button>
-          <button type="button" data-coach-command="/level">/level</button>
-          <button type="button" data-coach-command="/help">/help</button>
-          <button type="button" data-coach-command="/end">/end</button>
+        <div class="coach-composer">
+          <form id="coachForm" class="coach-form">
+            <div class="coach-input-head"><label for="coachInput">메시지</label><span><kbd>Enter</kbd> 전송 · <kbd>Shift</kbd>+<kbd>Enter</kbd> 줄바꿈</span></div>
+            <div class="coach-input-row">
+              <textarea id="coachInput" name="message" rows="2" maxlength="600" autocomplete="off" placeholder="한국어 또는 영어로 입력하세요. 예: I want to practice English for work." required></textarea>
+              <button id="coachSend" type="submit">보내기</button>
+            </div>
+            <div class="coach-input-meta"><span id="coachInputStatus" role="status" aria-live="polite">메시지를 입력해 주세요.</span><span id="coachCounter">0/600</span></div>
+          </form>
+          <div class="coach-starters" aria-label="시작 문장 예시">
+            <span>시작 문장</span>
+            <button type="button" data-coach-suggestion="I want to practice English for work.">업무 영어</button>
+            <button type="button" data-coach-suggestion="I want to practice English for travel.">여행 영어</button>
+            <button type="button" data-coach-suggestion="I want to talk about my daily routine.">일상 이야기</button>
+          </div>
+          <div class="coach-quick" aria-label="빠른 명령">
+            <button type="button" data-coach-command="/start">/start</button>
+            <button type="button" data-coach-command="/level">/level</button>
+            <button type="button" data-coach-command="/help">/help</button>
+            <button type="button" data-coach-command="/end">/end</button>
+          </div>
         </div>
         <p class="coach-help">한국어 원문은 화면에 남고 영어 변환문으로 코칭합니다. 로컬에서는 주요 학습 문장만 예시로 변환하며, 배포 후에는 임의 문장도 AI 서버에서 변환합니다.</p>
       </div>
+      <div class="metrics"><article class="metric"><span class="metric-label">합성 시나리오</span><strong>3개</strong><small>A1·B1·B2→C1</small></article><article class="metric"><span class="metric-label">학습자 발화</span><strong>18회</strong><small>시나리오당 6회</small></article><article class="metric"><span class="metric-label">수준 변화</span><strong>B2→C1</strong><small>합성 기능 검증</small></article></div>
+      <h3>상호작용 흐름</h3>
+      <ol class="steps"><li>/start로 목표·주제·한국어 지원 수준 설정</li><li>독립 영어 응답 6개 수집</li><li>최초 CEFR 잠정 추정</li><li>이후 5개 응답마다 근거 기반 재평가</li><li>/end로 한계가 포함된 세션 보고서 생성</li></ol>
       <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
       <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
       <details class="code-details"><summary>적용 프롬프트 보기 <span>part1_prompt_구범용 v0</span></summary><div class="code-cell"><span class="cell-label">SYSTEM PROMPT · 독립 작성본</span><pre><code>You are StepUp English, an adaptive English conversation coach.
@@ -449,42 +485,15 @@ If fewer than six independent responses exist, report the level as estimating or
   </main>
   <script>
     (() => {
-      const tabs = [...document.querySelectorAll('.tabs [role="tab"]')];
       const panels = [...document.querySelectorAll('[data-panel]')];
       function selectedAssignmentView(taskKey) {
         return [...document.querySelectorAll('[data-assignment-tab]')]
           .find(tab => tab.dataset.assignment === taskKey && tab.getAttribute('aria-selected') === 'true')
           ?.dataset.assignmentTab || '';
       }
-      function activate(key, focus = false, updateHash = true) {
-        tabs.forEach(tab => {
-          const selected = tab.dataset.tab === key;
-          tab.setAttribute('aria-selected', selected ? 'true' : 'false');
-          tab.tabIndex = selected ? 0 : -1;
-          if (selected && focus) tab.focus();
-        });
-        panels.forEach(panel => panel.hidden = panel.dataset.panel !== key);
-        if (updateHash) {
-          const selectedView = selectedAssignmentView(key);
-          const suffix = selectedView ? '/' + selectedView : '';
-          history.replaceState(null, '', '#' + key + suffix);
-        }
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-      tabs.forEach((tab, index) => {
-        tab.addEventListener('click', () => activate(tab.dataset.tab));
-        tab.addEventListener('keydown', event => {
-          let next = null;
-          if (event.key === 'ArrowRight') next = (index + 1) % tabs.length;
-          if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length;
-          if (event.key === 'Home') next = 0;
-          if (event.key === 'End') next = tabs.length - 1;
-          if (next !== null) { event.preventDefault(); activate(tabs[next].dataset.tab, true); }
-        });
-      });
       const route = location.hash.slice(1).split('/');
-      const initial = route[0];
-      if (tabs.some(tab => tab.dataset.tab === initial)) activate(initial, false, false);
+      const initial = route[0] || 'team';
+      panels.forEach(panel => panel.hidden = panel.dataset.panel !== 'team');
 
       const assignmentTabs = [...document.querySelectorAll('[data-assignment-tab]')];
       const assignmentPanels = [...document.querySelectorAll('[data-assignment-panel]')];
@@ -500,7 +509,7 @@ If fewer than six independent responses exist, report the level as estimating or
         });
         groupPanels.forEach(panel => panel.hidden = panel.dataset.assignmentPanel !== view);
         try { localStorage.setItem('ai-assignment-' + taskKey + '-view', view); } catch (error) {}
-        if (updateHash && document.querySelector('#tab-' + taskKey)?.getAttribute('aria-selected') === 'true') {
+        if (updateHash && document.querySelector('[data-panel="' + taskKey + '"]') && !document.querySelector('[data-panel="' + taskKey + '"]').hidden) {
           history.replaceState(null, '', '#' + taskKey + '/' + view);
         }
       }
@@ -562,6 +571,9 @@ If fewer than six independent responses exist, report the level as estimating or
       const coachLog = document.querySelector('#coachLog');
       const coachMode = document.querySelector('#coachMode');
       const coachLevel = document.querySelector('#coachLevel');
+      const coachProgress = document.querySelector('#coachProgress');
+      const coachInputStatus = document.querySelector('#coachInputStatus');
+      const coachCounter = document.querySelector('#coachCounter');
       const coachAutoTranslate = document.querySelector('#coachAutoTranslate');
       const coachShowKorean = document.querySelector('#coachShowKorean');
       const publicUrl = document.querySelector('meta[name="supabase-url"]').content;
@@ -596,9 +608,19 @@ If fewer than six independent responses exist, report the level as estimating or
       }
 
       function renderCoachLevel() {
+        const remaining = nextReviewIn();
+        const cycleSize = learnerTurns < 6 ? 6 : 5;
+        const completed = learnerTurns < 6
+          ? learnerTurns
+          : (learnerTurns - 6) % 5;
         coachLevel.textContent = currentLevel === 'estimating'
-          ? '현재 추정: 산정 중 · ' + nextReviewIn() + '개 남음'
-          : '현재 추정: ' + currentLevel + ' · 다음 검토 ' + nextReviewIn() + '개';
+          ? '현재 추정: 산정 중 · ' + remaining + '개 남음'
+          : '현재 추정: ' + currentLevel + ' · 다음 검토 ' + remaining + '개';
+        coachProgress.max = cycleSize;
+        coachProgress.value = Math.min(completed, cycleSize);
+        coachProgress.setAttribute('aria-label', currentLevel === 'estimating'
+          ? 'CEFR 최초 추정 진행도: ' + completed + '/' + cycleSize
+          : 'CEFR 다음 재평가 진행도: ' + completed + '/' + cycleSize);
       }
 
       function resetCoachState() {
@@ -630,9 +652,9 @@ If fewer than six independent responses exist, report the level as estimating or
         translation.querySelector('p').textContent = content;
       }
 
-      function appendCoachMessage(role, content, translation = '', translationLabel = '한국어 해석') {
+      function appendCoachMessage(role, content, translation = '', translationLabel = '한국어 해석', variant = '') {
         const bubble = document.createElement('div');
-        bubble.className = 'bubble ' + (role === 'user' ? 'user' : 'assistant');
+        bubble.className = 'bubble ' + (role === 'user' ? 'user' : 'assistant') + (variant ? ' ' + variant : '');
         const label = document.createElement('span');
         label.textContent = role === 'user' ? '학습자' : 'StepUp English';
         const body = document.createElement('p');
@@ -897,6 +919,7 @@ If fewer than six independent responses exist, report the level as estimating or
         coachBusy = true;
         coachSend.disabled = true;
         coachInput.disabled = true;
+        coachInputStatus.textContent = '코치가 답변을 준비하고 있습니다.';
         let result;
         let serverIndependent = false;
         const controlResult = isCommand || sessionStatus === 'not_started' || sessionStatus === 'setup' || sessionStatus === 'ended'
@@ -969,20 +992,47 @@ If fewer than six independent responses exist, report the level as estimating or
         const fullReplyKorean = result.reply_ko || '';
         const replyKorean = coachShowKorean.checked ? fullReplyKorean : '';
         if (!controlResult) coachMessages.push({ role: 'assistant', content: replyEnglish });
-        appendCoachMessage('assistant', replyEnglish, replyKorean);
+        appendCoachMessage('assistant', replyEnglish, replyKorean, '한국어 해석', text === '/level' ? 'level-card' : '');
         lastCoachEnglish = replyEnglish;
         lastCoachKorean = fullReplyKorean;
         coachBusy = false;
         coachSend.disabled = false;
         coachInput.disabled = false;
+        coachInputStatus.textContent = coachMode.classList.contains('degraded')
+          ? '서버 대신 로컬 데모 답변을 표시했습니다.'
+          : '답변을 받았습니다.';
         coachInput.focus();
+      }
+
+      function updateCoachInput() {
+        coachInput.style.height = 'auto';
+        coachInput.style.height = Math.min(coachInput.scrollHeight, 156) + 'px';
+        coachCounter.textContent = coachInput.value.length + '/600';
+        if (!coachBusy) coachInputStatus.textContent = coachInput.value.trim()
+          ? 'Enter로 보내거나 Shift+Enter로 줄을 바꿀 수 있습니다.'
+          : '메시지를 입력해 주세요.';
       }
 
       coachForm.addEventListener('submit', event => {
         event.preventDefault();
         const value = coachInput.value;
         coachInput.value = '';
+        updateCoachInput();
         submitCoachMessage(value);
+      });
+      coachInput.addEventListener('input', updateCoachInput);
+      coachInput.addEventListener('keydown', event => {
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+          event.preventDefault();
+          coachForm.requestSubmit();
+        }
+      });
+      document.querySelectorAll('[data-coach-suggestion]').forEach(button => {
+        button.addEventListener('click', () => {
+          coachInput.value = button.dataset.coachSuggestion;
+          updateCoachInput();
+          coachInput.focus();
+        });
       });
       document.querySelectorAll('[data-coach-command]').forEach(button => {
         button.addEventListener('click', () => submitCoachMessage(button.dataset.coachCommand));
@@ -992,6 +1042,7 @@ If fewer than six independent responses exist, report the level as estimating or
         'Hello! Type /start to begin a StepUp English session.',
         '안녕하세요! StepUp English 세션을 시작하려면 /start를 입력하세요.'
       );
+      updateCoachInput();
       renderCoachLevel();
 
       const syncDot = document.querySelector('#syncDot');
