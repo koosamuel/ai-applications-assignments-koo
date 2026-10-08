@@ -1,2 +1,4 @@
 [functions.english-coach]
+# 공개 웹은 사용자 로그인을 요구하지 않으므로 게이트웨이 JWT 검사는 끈다.
+# 함수 내부의 @supabase/server publishable-key 검증과 Origin·호출량 제한을 함께 적용한다.
 verify_jwt = false

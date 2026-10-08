@@ -62,19 +62,50 @@ Publishable Key는 브라우저 공개용 키다. 데이터베이스 비밀번�
 ## 팀과제 대화형 챗봇
 
 - Supabase 연결 전에는 팀과제 탭에서 로컬 규칙 기반 데모 코치가 입력에 응답한다.
-- 연결 후에는 `supabase/functions/english-coach`가 OpenAI API를 호출한다.
+- 연결 후에는 `supabase/functions/english-coach`가 Claude Messages API를 호출한다.
 - 한국어 입력 자동 변환을 켜면 원문 아래에 영어 변환문을 표시하고, 영어 코치 답변 아래에는 한국어 해석을 표시한다.
-- 서버는 Responses API Structured Outputs로 `translated_input_en`, `reply_en`, `reply_ko`, `evidence`를 반환한다.
-- OpenAI API 키는 브라우저나 Git에 넣지 않고 Edge Function Secret으로만 설정한다.
+- 서버는 Claude Structured Outputs로 `translated_input_en`, `reply_en`, `reply_ko`, `evidence`를 반환한다.
+- Anthropic API 키는 브라우저나 Git에 넣지 않고 Edge Function Secret으로만 설정한다.
 - 대화 본문은 기본적으로 데이터베이스에 저장하지 않는다.
+- `api_usage_daily`와 `api_usage_events`에는 날짜·모델·토큰·비용만 기록하며 프롬프트, 응답, 이름과 API 키는 저장하지 않는다.
+- 함수는 `@supabase/server`로 Publishable Key를 확인하고, 허용 Origin·12KB 요청 크기·8개 메시지·역할 순서를 검증한다.
+- 원본 IP는 저장하지 않고 비밀 Salt로 만든 SHA-256 해시만 분당 호출 제한에 사용한다. 기본값은 클라이언트당 분당 6회다.
+- 기본 예산은 충전액 US$20의 5%인 **US$1/일**이다. 동시 요청도 호출 전에 비용을 예약하며, 한도 초과 시 Claude를 호출하지 않고 HTTP 429를 반환한다.
+- 15분 이상 정산되지 않은 예약은 다음 요청 시 보수적으로 예상 비용 전액을 사용한 것으로 정산해 예약 잠금을 해제한다.
+- 예산 원장이나 정산이 동작하지 않으면 비용 보호를 위해 호출을 중단한다(fail closed).
 
 Supabase CLI에서 전용 프로젝트를 연결한 뒤 아래 순서로 배포한다.
 
 ```bash
 supabase link --project-ref YOUR_PROJECT_REF
-supabase secrets set OPENAI_API_KEY=YOUR_OPENAI_API_KEY
+supabase secrets set ANTHROPIC_API_KEY=YOUR_ANTHROPIC_API_KEY
+supabase secrets set ANTHROPIC_MODEL=claude-haiku-5-5
+supabase secrets set ANTHROPIC_MAX_OUTPUT_TOKENS=700
+supabase secrets set ANTHROPIC_CREDIT_USD=20
+supabase secrets set ANTHROPIC_DAILY_BUDGET_PERCENT=5
+supabase secrets set ANTHROPIC_USAGE_TIMEZONE=Asia/Seoul
+supabase secrets set RATE_LIMIT_REQUESTS_PER_MINUTE=6
 supabase secrets set ALLOWED_ORIGINS=https://ai-applications-assignments-koo.koosamuel1.chatgpt.site
-supabase functions deploy english-coach --no-verify-jwt
+supabase functions deploy english-coach
 ```
 
-`YOUR_OPENAI_API_KEY`는 문서·HTML·셸 기록에 남기지 말고 안전한 로컬 환경에서 직접 입력한다. 외부 공개 전에는 호출량 제한과 비용 상한을 추가한다.
+`YOUR_ANTHROPIC_API_KEY`는 문서·HTML·셸 기록에 남기지 말고 안전한 로컬 환경에서 직접 입력한다. `SUPABASE_SERVICE_ROLE_KEY`는 Edge Function의 서버 측 내장 Secret으로만 읽으며 웹 빌드 환경에는 넣지 않는다.
+로컬 키 메모 파일은 Edge Function에 자동 전송되지 않으며 파일명·경로·내용을 Git·Sites 배포물에 포함하지 않는다.
+
+`RATE_LIMIT_SALT`는 32자 이상의 무작위 값을 Supabase Dashboard의 Edge Function Secret으로 직접 등록한다. 값 자체는 문서·셸 기록·브라우저 환경변수에 남기지 않는다. `supabase/config.toml`의 `verify_jwt=false`는 공개 웹 호출을 위한 설정이며, 함수 내부에서 Publishable Key를 다시 확인한다.
+
+운영 중 집계는 Supabase SQL Editor에서 서버 권한으로 확인한다. 아래 조회는 대화 내용을 반환하지 않는다.
+
+```sql
+select
+  usage_date,
+  request_count,
+  spent_microusd / 1000000.0 as spent_usd,
+  daily_limit_microusd / 1000000.0 as daily_limit_usd,
+  input_tokens,
+  output_tokens
+from public.api_usage_daily
+order by usage_date desc;
+```
+
+이 일일 제한은 이 Edge Function을 통과한 호출에 적용된다. 같은 Anthropic 키를 다른 스크립트나 서비스에서 직접 사용한 비용까지 차단하려면 Anthropic Console의 Workspace 지출 한도도 별도로 설정한다.
