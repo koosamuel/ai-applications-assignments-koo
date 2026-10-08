@@ -305,12 +305,16 @@ async function coach(request, env) {
     "The client waits for six independent responses, then reviews every five. Level changes need two consecutive windows and move at most one step.",
     "Independent response count: " + learnerTurns + ". Current displayed estimate: " + currentLevel + ".",
     learnerTurns < 6
-      ? "Initial diagnostic: acknowledge briefly and ask one varied open-ended English question. Do not correct or rewrite yet."
+      ? "Initial diagnostic: acknowledge the meaning briefly and ask one related open-ended English question. Do not correct or rewrite yet."
       : feedbackMode
       ? "Reply naturally, name one specific strength, give at most two high-impact corrections with brief reasons, and ask one related next question."
       : "Feedback is paused: reply naturally and ask one related next question without corrections.",
     "Use concrete tasks at A1-A2, reasons and comparisons at B1-B2, and ambiguity or trade-offs at C1-C2.",
-    "reply_ko must faithfully translate reply_en. evidence must contain only short observable features.",
+    "Base the next question on the final learner message. If it names a topic such as music, ask about that exact topic rather than switching topics.",
+    "For an ordinary turn, use one short direct acknowledgment and one related question. Avoid formulaic repetition such as 'Thanks for sharing that.'",
+    "reply_ko must be natural Korean learning support that matches reply_en, not a word-for-word translation.",
+    "answer_frame_en must be one short blank-based sentence frame for the current question, using ___ for learner choices; never provide a complete personal answer.",
+    "answer_frame_ko must briefly explain what to put in the blanks. evidence must contain only short observable features.",
   ].join("\n");
   const learnerTranscript = messages
     .filter((message) => message.role === "user")
@@ -374,9 +378,11 @@ async function coach(request, env) {
                 translated_input_en: { type: "string" },
                 reply_en: { type: "string" },
                 reply_ko: { type: "string" },
+                answer_frame_en: { type: "string" },
+                answer_frame_ko: { type: "string" },
                 evidence: { type: "string" },
               },
-              required: ["translated_input_en", "reply_en", "reply_ko", "evidence"],
+              required: ["translated_input_en", "reply_en", "reply_ko", "answer_frame_en", "answer_frame_ko", "evidence"],
               additionalProperties: false,
             },
           },
@@ -422,7 +428,7 @@ async function coach(request, env) {
   } catch {
     return json({ error: "invalid_coach_response" }, 502);
   }
-  for (const key of ["translated_input_en", "reply_en", "reply_ko", "evidence"]) {
+  for (const key of ["translated_input_en", "reply_en", "reply_ko", "answer_frame_en", "answer_frame_ko", "evidence"]) {
     if (typeof structured[key] !== "string" || !structured[key].trim()) {
       return json({ error: "invalid_coach_response" }, 502);
     }
@@ -441,6 +447,8 @@ async function coach(request, env) {
     translated_input_en: translatedInput,
     reply_en: structured.reply_en.trim(),
     reply_ko: structured.reply_ko.trim(),
+    answer_frame_en: structured.answer_frame_en.trim(),
+    answer_frame_ko: structured.answer_frame_ko.trim(),
     evidence: structured.evidence.trim(),
     level: estimateLevel(levelMessages),
     learner_turns: learnerTurns,
