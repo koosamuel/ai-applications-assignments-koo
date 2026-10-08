@@ -1,4 +1,4 @@
-const CACHE_NAME = "ai-assignments-v4";
+const CACHE_NAME = "stepup-team1-v5";
 const APP_SHELL = ["./", "./index.html", "./manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {

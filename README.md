@@ -1,16 +1,17 @@
-# AI응용 개인·팀과제 통합 웹
+# AI응용 1조 팀과제 웹
 
 공훈의 교수님 어린이 작가 프로젝트와 같은 정적 배포 구조를 사용한다.
 
 ```text
-원본 과제 결과 → 통합 HTML 생성 → dist 정적 빌드 → 로컬 Python HTTP 서버 / Sites
+팀과제 결과·Part 1 프롬프트 → 팀과제 전용 HTML 생성 → dist 정적 빌드 → 로컬 Python HTTP 서버 / Sites
 ```
 
 ## 어린이 작가 프로젝트와의 관계
 
 - 정적 HTML → `dist` → Python 로컬 서버 / Sites 배포 흐름은 동일하다.
 - Supabase 프로젝트는 어린이 작가 프로젝트와 공유하지 않고 별도로 생성한다.
-- Supabase에는 공개 가능한 과제별 상태·요약·대표 지표만 저장한다.
+- 공개 화면에는 팀과제만 노출하고 개인 실습 탭은 생성하지 않는다.
+- Supabase에는 공개 가능한 팀과제 상태·요약·대표 지표만 저장한다.
 - 고객 원본 정보, API 키, 노트북 전체 코드와 로컬 경로는 데이터베이스에 저장하지 않는다.
 - 서비스워커는 HTML과 매니페스트를 캐시하고 네트워크 장애 시 정적 스냅샷을 표시한다.
 - CSS, JavaScript와 과제 이미지는 `index.html`에 포함한다.
@@ -63,6 +64,9 @@ Publishable Key는 브라우저 공개용 키다. 데이터베이스 비밀번�
 
 - Supabase 연결 전에는 팀과제 탭에서 로컬 규칙 기반 데모 코치가 입력에 응답한다.
 - 연결 후에는 `supabase/functions/english-coach`가 Claude Messages API를 호출한다.
+- `part1_prompt_구범용.md`의 독립 작성 프롬프트를 화면과 서버 동작 규칙의 원본으로 사용한다.
+- 최초 독립 영어 응답 6개 뒤 잠정 CEFR 수준을 표시하고 이후 5개마다 재검토한다.
+- `/start`, `/level`, `/help`, `/translate`, `/feedback on|off`, `/reset`, `/end`는 전체 메시지가 정확히 일치할 때만 실행한다.
 - 한국어 입력 자동 변환을 켜면 원문 아래에 영어 변환문을 표시하고, 영어 코치 답변 아래에는 한국어 해석을 표시한다.
 - 서버는 Claude Structured Outputs로 `translated_input_en`, `reply_en`, `reply_ko`, `evidence`를 반환한다.
 - Anthropic API 키는 브라우저나 Git에 넣지 않고 Edge Function Secret으로만 설정한다.

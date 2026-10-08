@@ -1,7 +1,7 @@
 {
-  "name": "AI응용 개인·팀과제 통합",
-  "short_name": "AI응용 과제",
-  "description": "개인과제 1·3·4·5·6과 팀과제 2의 구현 및 실행 결과",
+  "name": "StepUp English 팀과제 · 1조",
+  "short_name": "StepUp 1조",
+  "description": "1조의 CEFR 적응형 영어 회화 코치 팀과제",
   "lang": "ko",
   "start_url": "./",
   "scope": "./",
