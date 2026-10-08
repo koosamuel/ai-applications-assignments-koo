@@ -140,7 +140,7 @@
     .coach-log .bubble.pending { color:#40544c; border:1px dashed #9bbab1; background:#f0f6f3; }
     .coach-log .bubble.pending p::after { content:'…'; display:inline-block; width:1.2em; overflow:hidden; vertical-align:bottom; animation:coach-dots 1.1s steps(4,end) infinite; }
     @keyframes coach-dots { from { width:0; } to { width:1.2em; } }
-    .coach-cefr-panel { margin:0 14px 14px; padding:15px; border:1px solid #b8d8d0; border-radius:15px; background:linear-gradient(145deg,#f8fcfa,#edf7f3); }
+    .coach-cefr-panel { margin:14px; padding:15px; border:1px solid #b8d8d0; border-radius:15px; background:linear-gradient(145deg,#f8fcfa,#edf7f3); }
     .coach-cefr-panel.is-complete { border-color:#63aa99; box-shadow:0 7px 20px rgba(15,118,110,.12); }
     .coach-cefr-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
     .coach-cefr-head span { display:block; color:var(--accent); font-size:.7rem; font-weight:900; letter-spacing:.08em; }
@@ -252,26 +252,6 @@
           <div class="coach-level-state"><span id="coachLevel">현재 추정: 산정 중</span><small>CEFR 텍스트 기반 잠정 추정</small></div>
         </div>
         <div id="coachLog" class="coach-log" role="log" aria-live="polite" aria-label="StepUp English 대화"></div>
-        <section id="coachCefrPanel" class="coach-cefr-panel" aria-labelledby="coachCefrTitle">
-          <div class="coach-cefr-head">
-            <div><span>CEFR 학습 상태</span><h4 id="coachCefrTitle">평가 자료 수집 중</h4></div>
-            <strong id="coachConfidence" class="coach-confidence">신뢰도 대기</strong>
-          </div>
-          <div id="coachCefrLadder" class="coach-cefr-ladder" role="list" aria-label="CEFR A1부터 C2까지 수준 단계">
-            <span role="listitem" data-cefr-level="A1"><strong>A1</strong><small>입문</small></span>
-            <span role="listitem" data-cefr-level="A2"><strong>A2</strong><small>기초</small></span>
-            <span role="listitem" data-cefr-level="B1"><strong>B1</strong><small>중급</small></span>
-            <span role="listitem" data-cefr-level="B2"><strong>B2</strong><small>중상급</small></span>
-            <span role="listitem" data-cefr-level="C1"><strong>C1</strong><small>고급</small></span>
-            <span role="listitem" data-cefr-level="C2"><strong>C2</strong><small>숙련</small></span>
-          </div>
-          <div class="coach-cefr-stats">
-            <div><span>학습 답변</span><strong id="coachResponseCount">0/6개</strong></div>
-            <div><span>다음 확인</span><strong id="coachNextReview">6개 후</strong></div>
-            <div><span>평가 상태</span><strong id="coachAssessmentState">자료 수집 중</strong></div>
-          </div>
-          <p id="coachCefrEvidence">답변 6개가 모이면 첫 잠정 수준을 표시합니다.</p>
-        </section>
         <div class="coach-options" aria-label="번역 설정">
           <label><input id="coachAutoTranslate" type="checkbox" checked> 한국어 입력 자동 영어 변환</label>
           <label><input id="coachShowKorean" type="checkbox" checked> 코치 답변 한국어 해석 표시</label>
@@ -300,6 +280,26 @@
           </div>
         </div>
         <p class="coach-help">한국어 원문은 화면에 남고 영어 변환문으로 코칭합니다. 로컬에서는 주요 학습 문장만 예시로 변환하며, 배포 후에는 임의 문장도 AI 서버에서 변환합니다.</p>
+        <section id="coachCefrPanel" class="coach-cefr-panel" aria-labelledby="coachCefrTitle">
+          <div class="coach-cefr-head">
+            <div><span>CEFR 학습 상태</span><h4 id="coachCefrTitle">평가 자료 수집 중</h4></div>
+            <strong id="coachConfidence" class="coach-confidence">신뢰도 대기</strong>
+          </div>
+          <div id="coachCefrLadder" class="coach-cefr-ladder" role="list" aria-label="CEFR A1부터 C2까지 수준 단계">
+            <span role="listitem" data-cefr-level="A1"><strong>A1</strong><small>입문</small></span>
+            <span role="listitem" data-cefr-level="A2"><strong>A2</strong><small>기초</small></span>
+            <span role="listitem" data-cefr-level="B1"><strong>B1</strong><small>중급</small></span>
+            <span role="listitem" data-cefr-level="B2"><strong>B2</strong><small>중상급</small></span>
+            <span role="listitem" data-cefr-level="C1"><strong>C1</strong><small>고급</small></span>
+            <span role="listitem" data-cefr-level="C2"><strong>C2</strong><small>숙련</small></span>
+          </div>
+          <div class="coach-cefr-stats">
+            <div><span>학습 답변</span><strong id="coachResponseCount">0/6개</strong></div>
+            <div><span>다음 확인</span><strong id="coachNextReview">6개 후</strong></div>
+            <div><span>평가 상태</span><strong id="coachAssessmentState">자료 수집 중</strong></div>
+          </div>
+          <p id="coachCefrEvidence">답변 6개가 모이면 첫 잠정 수준을 표시합니다.</p>
+        </section>
       </div>
       <div class="metrics"><article class="metric"><span class="metric-label">합성 시나리오</span><strong>3개</strong><small>A1·B1·B2→C1</small></article><article class="metric"><span class="metric-label">학습자 발화</span><strong>18회</strong><small>시나리오당 6회</small></article><article class="metric"><span class="metric-label">수준 변화</span><strong>B2→C1</strong><small>합성 기능 검증</small></article></div>
       <h3>상호작용 흐름</h3>
