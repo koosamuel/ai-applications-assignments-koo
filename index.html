@@ -129,17 +129,38 @@
     .coach-app { margin:14px 0 26px; overflow:hidden; border:1px solid #c8d5cf; border-radius:18px; background:#f7faf7; box-shadow:0 10px 30px rgba(31,45,38,.07); }
     .coach-topbar { display:flex; align-items:center; justify-content:space-between; gap:18px; padding:13px 16px; color:var(--muted); background:#e9f1ec; font-size:.82rem; font-weight:750; }
     .coach-server-state,.coach-level-state { display:grid; gap:3px; min-width:0; }
-    .coach-server-state small { color:#56675f; font-size:.72rem; font-weight:650; }
+    .coach-server-state small,.coach-level-state small { color:#56675f; font-size:.72rem; font-weight:650; }
     .coach-level-state { justify-items:end; width:min(300px,48%); }
-    .coach-level-state progress { width:100%; height:8px; overflow:hidden; border:0; border-radius:999px; background:#ccd8d2; accent-color:var(--accent); }
-    .coach-level-state progress::-webkit-progress-bar { background:#ccd8d2; border-radius:999px; }
-    .coach-level-state progress::-webkit-progress-value { background:var(--accent); border-radius:999px; }
     .coach-mode { color:var(--accent); }
     .coach-mode.online { color:#08745f; }
     .coach-mode.degraded { color:#815000; }
     .coach-log { display:grid; align-content:start; grid-auto-rows:max-content; gap:12px; min-height:250px; max-height:520px; padding:18px; overflow-y:auto; overscroll-behavior:contain; }
     .coach-log .bubble { width:fit-content; max-width:min(78%,72ch); min-width:0; margin:0; overflow-wrap:anywhere; }
     .coach-log .bubble p { white-space:pre-line; }
+    .coach-log .bubble.pending { color:#40544c; border:1px dashed #9bbab1; background:#f0f6f3; }
+    .coach-log .bubble.pending p::after { content:'…'; display:inline-block; width:1.2em; overflow:hidden; vertical-align:bottom; animation:coach-dots 1.1s steps(4,end) infinite; }
+    @keyframes coach-dots { from { width:0; } to { width:1.2em; } }
+    .coach-cefr-panel { margin:0 14px 14px; padding:15px; border:1px solid #b8d8d0; border-radius:15px; background:linear-gradient(145deg,#f8fcfa,#edf7f3); }
+    .coach-cefr-panel.is-complete { border-color:#63aa99; box-shadow:0 7px 20px rgba(15,118,110,.12); }
+    .coach-cefr-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .coach-cefr-head span { display:block; color:var(--accent); font-size:.7rem; font-weight:900; letter-spacing:.08em; }
+    .coach-cefr-head h4 { margin:2px 0 0; font-size:1.08rem; }
+    .coach-confidence { padding:5px 9px; color:#5d665f; border:1px solid #c4d0ca; border-radius:999px; background:white; font-size:.74rem; white-space:nowrap; }
+    .coach-confidence.medium,.coach-confidence.high { color:#0c675e; border-color:#8fc9bc; background:#e5f5f0; }
+    .coach-cefr-ladder { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:7px; margin-top:13px; }
+    .coach-cefr-ladder > span { position:relative; min-width:0; padding:8px 5px; text-align:center; color:#6b7771; border:1px solid #cdd7d2; border-radius:10px; background:#fff; }
+    .coach-cefr-ladder > span:not(:last-child)::after { content:''; position:absolute; z-index:0; top:50%; left:100%; width:8px; height:2px; background:#cdd7d2; }
+    .coach-cefr-ladder strong,.coach-cefr-ladder small { position:relative; z-index:1; display:block; }
+    .coach-cefr-ladder strong { font-size:.9rem; }
+    .coach-cefr-ladder small { margin-top:1px; font-size:.64rem; }
+    .coach-cefr-ladder > span.is-reached { color:#23685c; border-color:#a1d0c4; background:#eaf6f2; }
+    .coach-cefr-ladder > span.is-current { color:white; border-color:var(--accent); background:var(--accent); box-shadow:0 5px 14px rgba(15,118,110,.22); transform:translateY(-2px); }
+    .coach-cefr-stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-top:11px; }
+    .coach-cefr-stats div { min-width:0; padding:9px 10px; border-radius:10px; background:rgba(255,255,255,.82); }
+    .coach-cefr-stats span,.coach-cefr-stats strong { display:block; }
+    .coach-cefr-stats span { color:var(--muted); font-size:.68rem; }
+    .coach-cefr-stats strong { margin-top:1px; overflow-wrap:anywhere; font-size:.82rem; }
+    .coach-cefr-panel > p { margin:10px 0 0; color:#52645c; font-size:.76rem; }
     .coach-options { display:flex; flex-wrap:wrap; gap:9px 18px; padding:11px 14px; color:var(--muted); border-top:1px solid var(--line); background:#f3f7f3; font-size:.82rem; }
     .coach-options label { display:flex; align-items:center; min-height:44px; gap:8px; cursor:pointer; }
     .coach-options input { width:17px; height:17px; accent-color:var(--accent); }
@@ -203,7 +224,7 @@
     .live-update time { color:var(--muted); font-size:.78rem; }
     footer { padding:24px 4px 0; color:var(--muted); font-size:.84rem; text-align:center; }
     @media (max-width:900px) { .steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} }
+    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} .coach-cefr-ladder{grid-template-columns:repeat(3,minmax(0,1fr))} .coach-cefr-ladder > span:nth-child(3)::after{display:none} .coach-cefr-stats{grid-template-columns:1fr} }
     @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-answer-frame{grid-template-columns:1fr} .coach-answer-frame button{width:100%} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-quick{gap:7px} .coach-quick button{flex:1 0 auto} }
     @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important} }
     @media print { body{background:white} .shell{width:100%;padding:0} .tabs,.assignment-tabs,.dataset-tabs{display:none} [data-panel]{display:block!important;break-before:page;box-shadow:none;border:0;padding:20px 0} [data-panel]:first-of-type{break-before:auto} .assignment-view,.dataset-panel{display:block!important} .prompt-details:not([open]) > :not(summary){display:block!important} .code-details{display:none} footer{display:none} }
@@ -227,10 +248,30 @@
       <p class="coach-intro">영어 문장을 보내면 바로 연습이 시작됩니다. 예시 답변을 입력창에 넣어 바꿔 쓸 수 있으며, <strong>처음부터 다시</strong>를 누르면 대화와 수준 평가가 초기화됩니다.</p>
       <div class="coach-app">
         <div class="coach-topbar">
-          <div class="coach-server-state"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><small>서버 장애 시에도 연습을 계속합니다</small></div>
-          <div class="coach-level-state"><span id="coachLevel">현재 추정: 산정 중</span><progress id="coachProgress" max="6" value="0" aria-label="CEFR 최초 추정 진행도"></progress></div>
+          <div class="coach-server-state"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><small id="coachServerDetail">서버 장애 시에도 빠른 대체 응답으로 연습을 계속합니다</small></div>
+          <div class="coach-level-state"><span id="coachLevel">현재 추정: 산정 중</span><small>CEFR 텍스트 기반 잠정 추정</small></div>
         </div>
         <div id="coachLog" class="coach-log" role="log" aria-live="polite" aria-label="StepUp English 대화"></div>
+        <section id="coachCefrPanel" class="coach-cefr-panel" aria-labelledby="coachCefrTitle">
+          <div class="coach-cefr-head">
+            <div><span>CEFR 학습 상태</span><h4 id="coachCefrTitle">평가 자료 수집 중</h4></div>
+            <strong id="coachConfidence" class="coach-confidence">신뢰도 대기</strong>
+          </div>
+          <div id="coachCefrLadder" class="coach-cefr-ladder" role="list" aria-label="CEFR A1부터 C2까지 수준 단계">
+            <span role="listitem" data-cefr-level="A1"><strong>A1</strong><small>입문</small></span>
+            <span role="listitem" data-cefr-level="A2"><strong>A2</strong><small>기초</small></span>
+            <span role="listitem" data-cefr-level="B1"><strong>B1</strong><small>중급</small></span>
+            <span role="listitem" data-cefr-level="B2"><strong>B2</strong><small>중상급</small></span>
+            <span role="listitem" data-cefr-level="C1"><strong>C1</strong><small>고급</small></span>
+            <span role="listitem" data-cefr-level="C2"><strong>C2</strong><small>숙련</small></span>
+          </div>
+          <div class="coach-cefr-stats">
+            <div><span>학습 답변</span><strong id="coachResponseCount">0/6개</strong></div>
+            <div><span>다음 확인</span><strong id="coachNextReview">6개 후</strong></div>
+            <div><span>평가 상태</span><strong id="coachAssessmentState">자료 수집 중</strong></div>
+          </div>
+          <p id="coachCefrEvidence">답변 6개가 모이면 첫 잠정 수준을 표시합니다.</p>
+        </section>
         <div class="coach-options" aria-label="번역 설정">
           <label><input id="coachAutoTranslate" type="checkbox" checked> 한국어 입력 자동 영어 변환</label>
           <label><input id="coachShowKorean" type="checkbox" checked> 코치 답변 한국어 해석 표시</label>
@@ -564,8 +605,16 @@ Always show the report immediately when `/end` is entered. If at least one learn
       const coachSend = document.querySelector('#coachSend');
       const coachLog = document.querySelector('#coachLog');
       const coachMode = document.querySelector('#coachMode');
+      const coachServerDetail = document.querySelector('#coachServerDetail');
       const coachLevel = document.querySelector('#coachLevel');
-      const coachProgress = document.querySelector('#coachProgress');
+      const coachCefrPanel = document.querySelector('#coachCefrPanel');
+      const coachCefrTitle = document.querySelector('#coachCefrTitle');
+      const coachConfidence = document.querySelector('#coachConfidence');
+      const coachResponseCount = document.querySelector('#coachResponseCount');
+      const coachNextReview = document.querySelector('#coachNextReview');
+      const coachAssessmentState = document.querySelector('#coachAssessmentState');
+      const coachCefrEvidence = document.querySelector('#coachCefrEvidence');
+      const coachCefrSteps = [...document.querySelectorAll('[data-cefr-level]')];
       const coachInputStatus = document.querySelector('#coachInputStatus');
       const coachCounter = document.querySelector('#coachCounter');
       const coachAutoTranslate = document.querySelector('#coachAutoTranslate');
@@ -592,6 +641,7 @@ Always show the report immediately when `/end` is entered. If at least one learn
       let pendingLevelCount = 0;
       let lastCoachEnglish = '';
       let lastCoachKorean = '';
+      let lastEvidence = '';
       let coachBusy = false;
       let currentAnswerFrame = {
         en: 'I enjoy listening to music because it helps me relax after work.',
@@ -614,18 +664,35 @@ Always show the report immediately when `/end` is entered. If at least one learn
 
       function renderCoachLevel() {
         const remaining = nextReviewIn();
-        const cycleSize = learnerTurns < 6 ? 6 : 5;
-        const completed = learnerTurns < 6
-          ? learnerTurns
-          : (learnerTurns - 6) % 5;
         coachLevel.textContent = currentLevel === 'estimating'
           ? '수준 평가 중 · 학습 답변 ' + learnerTurns + '/6개'
           : '현재 추정: ' + currentLevel + ' · 다음 검토 ' + remaining + '개';
-        coachProgress.max = cycleSize;
-        coachProgress.value = Math.min(completed, cycleSize);
-        coachProgress.setAttribute('aria-label', currentLevel === 'estimating'
-          ? 'CEFR 최초 추정 진행도: ' + completed + '/' + cycleSize
-          : 'CEFR 다음 재평가 진행도: ' + completed + '/' + cycleSize);
+        const levelIndex = LEVEL_ORDER.indexOf(currentLevel);
+        coachCefrSteps.forEach((step, index) => {
+          const isCurrent = index === levelIndex;
+          step.classList.toggle('is-reached', levelIndex >= 0 && index < levelIndex);
+          step.classList.toggle('is-current', isCurrent);
+          if (isCurrent) step.setAttribute('aria-current', 'step');
+          else step.removeAttribute('aria-current');
+        });
+        coachCefrPanel.classList.toggle('is-complete', sessionStatus === 'ended');
+        coachCefrTitle.textContent = sessionStatus === 'ended'
+          ? learnerTurns === 0 ? '평가 자료 없음' : '연습 완료 · ' + currentLevel
+          : currentLevel === 'estimating' ? '평가 자료 수집 중' : '현재 잠정 수준 · ' + currentLevel;
+        coachConfidence.textContent = learnerTurns === 0 ? '신뢰도 대기' : '신뢰도 ' + confidenceInKorean();
+        coachConfidence.className = 'coach-confidence' + (learnerTurns > 0 ? ' ' + confidence : '');
+        coachResponseCount.textContent = learnerTurns < 6 ? learnerTurns + '/6개' : learnerTurns + '개';
+        coachNextReview.textContent = sessionStatus === 'ended' ? '평가 완료' : remaining + '개 후';
+        coachAssessmentState.textContent = sessionStatus === 'ended'
+          ? learnerTurns === 0 ? '근거 없음' : '잠정 평가 완료'
+          : currentLevel === 'estimating' ? '자료 수집 중' : '주기적 재평가';
+        coachCefrEvidence.textContent = lastEvidence
+          ? '최근 관찰 근거: ' + lastEvidence
+          : sessionStatus === 'ended' && learnerTurns > 0
+            ? '종료 시점까지의 답변을 바탕으로 한 잠정 수준입니다.'
+            : currentLevel === 'estimating'
+              ? '답변 6개가 모이면 첫 잠정 수준을 표시합니다.'
+              : '어휘 범위, 문장 연결, 정확성과 대화 수행을 함께 확인합니다.';
       }
 
       function resetCoachState() {
@@ -633,9 +700,11 @@ Always show the report immediately when `/end` is entered. If at least one learn
         learnerTurns = 0;
         currentLevel = 'estimating';
         confidence = 'low';
+        sessionStatus = 'diagnostic';
         feedbackMode = true;
         pendingLevel = '';
         pendingLevelCount = 0;
+        lastEvidence = '';
         currentAnswerFrame = { en: '', ko: '' };
         coachAnswerFrame.hidden = true;
         renderCoachLevel();
@@ -818,6 +887,7 @@ Always show the report immediately when `/end` is entered. If at least one learn
           };
         }
         if (rawText === '/level') {
+          renderCoachLevel();
           const levelLabel = currentLevel === 'estimating' ? 'estimating' : currentLevel;
           return {
             reply_en: '[CEFR CHECK]\nCurrent estimate: ' + levelLabel + '\nConfidence: ' + confidence + '\nLearner answers counted: ' + learnerTurns + '/6\nAnswers needed for the next review: ' + nextReviewIn() + '\nCopied examples and automatic translations are included in this practice count.\nThis is a provisional text-based estimate, not an official score.',
@@ -854,6 +924,7 @@ Always show the report immediately when `/end` is entered. If at least one learn
         if (rawText === '/end') {
           finalizeAssessment();
           sessionStatus = 'ended';
+          renderCoachLevel();
           coachAnswerFrame.hidden = true;
           const reportLevelEn = learnerTurns === 0 ? 'Not enough evidence' : currentLevel;
           const reportLevelKo = learnerTurns === 0 ? '평가 자료 없음' : currentLevel;
@@ -926,21 +997,31 @@ Always show the report immediately when `/end` is entered. If at least one learn
       async function serverCoachReply(translateKorean) {
         const headers = { 'Content-Type': 'application/json' };
         if (publicKey) headers.apikey = publicKey;
-        const response = await fetch(coachEndpoint, {
-          method: 'POST',
-          headers,
-          body: JSON.stringify({
-            messages: coachMessages.slice(-14),
-            learner_turns: learnerTurns,
-            current_level: currentLevel,
-            translate_korean: translateKorean,
-            feedback_mode: feedbackMode
-          })
-        });
-        if (!response.ok) throw new Error('Coach server returned ' + response.status);
-        const data = await response.json();
-        if (!data.reply_en && !data.reply) throw new Error('Coach server response is empty');
-        return data;
+        const controller = new AbortController();
+        const timeoutId = window.setTimeout(() => controller.abort(), 10000);
+        try {
+          const response = await fetch(coachEndpoint, {
+            method: 'POST',
+            headers,
+            signal: controller.signal,
+            body: JSON.stringify({
+              messages: coachMessages.slice(-8),
+              learner_turns: learnerTurns,
+              current_level: currentLevel,
+              translate_korean: translateKorean,
+              feedback_mode: feedbackMode
+            })
+          });
+          if (!response.ok) {
+            const problem = await response.json().catch(() => ({}));
+            throw new Error(problem.error || 'Coach server returned ' + response.status);
+          }
+          const data = await response.json();
+          if (!data.reply_en && !data.reply) throw new Error('Coach server response is empty');
+          return data;
+        } finally {
+          window.clearTimeout(timeoutId);
+        }
       }
 
       async function submitCoachMessage(raw) {
@@ -956,6 +1037,9 @@ Always show the report immediately when `/end` is entered. If at least one learn
         coachInputStatus.textContent = '코치가 답변을 준비하고 있습니다.';
         let result;
         let serverResponsePending = false;
+        let pendingBubble = null;
+        let waitTimer = 0;
+        let requestStarted = 0;
         const controlResult = isCommand ? localControlResult(text) : null;
         const translateKorean = !controlResult && coachAutoTranslate.checked && hasHangul(text);
         const runPracticeLocal = () => {
@@ -979,8 +1063,15 @@ Always show the report immediately when `/end` is entered. If at least one learn
           if (controlResult) {
             result = controlResult;
           } else if (coachEndpoint) {
-            coachMode.textContent = 'AI 서버 모드';
+            coachMode.textContent = 'AI 서버 응답 중';
             coachMode.className = 'coach-mode online';
+            requestStarted = performance.now();
+            pendingBubble = appendCoachMessage('assistant', '답변을 분석하고 있습니다', '', '한국어 해석', 'pending');
+            coachServerDetail.textContent = '답변 분석 중 · 0초';
+            waitTimer = window.setInterval(() => {
+              const elapsed = Math.max(0, Math.floor((performance.now() - requestStarted) / 1000));
+              coachServerDetail.textContent = '답변 분석 중 · ' + elapsed + '초';
+            }, 1000);
             let coachText = text;
             if (translateKorean) {
               coachText = text;
@@ -989,6 +1080,9 @@ Always show the report immediately when `/end` is entered. If at least one learn
             coachMessages.push({ role: 'user', content: coachText });
             learnerTurns += 1;
             result = await serverCoachReply(translateKorean);
+            const elapsed = (performance.now() - requestStarted) / 1000;
+            coachMode.textContent = 'AI 서버 모드';
+            coachServerDetail.textContent = '최근 응답 ' + elapsed.toFixed(1) + '초';
             if (translateKorean && result.translated_input_en) {
               coachMessages[coachMessages.length - 1].content = result.translated_input_en;
               setBubbleTranslation(userBubble, '영어 변환', result.translated_input_en);
@@ -1008,17 +1102,25 @@ Always show the report immediately when `/end` is entered. If at least one learn
           }
         } catch (error) {
           console.warn('Coach server unavailable; using local demo.', error);
-          coachMode.textContent = '서버 연결 실패 · 로컬 데모';
+          const elapsed = requestStarted ? (performance.now() - requestStarted) / 1000 : 0;
+          coachMode.textContent = 'AI 응답 지연 · 빠른 대체';
           coachMode.className = 'coach-mode degraded';
+          coachServerDetail.textContent = elapsed
+            ? elapsed.toFixed(1) + '초 후 로컬 대체 응답을 표시했습니다'
+            : '로컬 대체 응답을 표시했습니다';
           if (coachMessages.at(-1)?.role === 'user') coachMessages.pop();
           if (serverResponsePending) learnerTurns = Math.max(0, learnerTurns - 1);
           result = runPracticeLocal();
         }
+        if (waitTimer) window.clearInterval(waitTimer);
+        if (pendingBubble) pendingBubble.remove();
+        if (result.evidence) lastEvidence = result.evidence;
+        renderCoachLevel();
         const replyEnglish = result.reply_en || result.reply;
         const fullReplyKorean = result.reply_ko || '';
         const replyKorean = coachShowKorean.checked ? fullReplyKorean : '';
         if (!controlResult) coachMessages.push({ role: 'assistant', content: replyEnglish });
-        appendCoachMessage('assistant', replyEnglish, replyKorean, '한국어 해석', text === '/level' ? 'level-card' : '');
+        appendCoachMessage('assistant', replyEnglish, replyKorean, '한국어 해석', text === '/level' || text === '/end' ? 'level-card' : '');
         setCoachAnswerFrame(result);
         lastCoachEnglish = replyEnglish;
         lastCoachKorean = fullReplyKorean;
@@ -1026,7 +1128,7 @@ Always show the report immediately when `/end` is entered. If at least one learn
         coachSend.disabled = false;
         coachInput.disabled = false;
         coachInputStatus.textContent = coachMode.classList.contains('degraded')
-          ? '서버 대신 로컬 데모 답변을 표시했습니다.'
+          ? 'AI 응답이 지연되어 빠른 대체 답변을 표시했습니다.'
           : '답변을 받았습니다.';
         coachInput.focus();
       }

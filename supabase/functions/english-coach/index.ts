@@ -458,12 +458,12 @@ Deno.serve(async (request) => {
   }
 
   const configuredMaxOutputTokens = Number.parseInt(
-    Deno.env.get("ANTHROPIC_MAX_OUTPUT_TOKENS") ?? "700",
+    Deno.env.get("ANTHROPIC_MAX_OUTPUT_TOKENS") ?? "500",
     10,
   );
   const maxOutputTokens = Number.isFinite(configuredMaxOutputTokens)
-    ? Math.min(1000, Math.max(300, configuredMaxOutputTokens))
-    : 700;
+    ? Math.min(500, Math.max(300, configuredMaxOutputTokens))
+    : 500;
 
   const translateKorean = body.translate_korean === true;
   const feedbackMode = body.feedback_mode !== false;
@@ -493,12 +493,14 @@ Deno.serve(async (request) => {
       : "Feedback is paused. Give a brief natural reply and one related next question without corrections.",
     "Adapt the next question: concrete familiar situations at A1-A2; reasons, comparisons, examples, and practical problems at B1-B2; ambiguity, trade-offs, synthesis, and audience-sensitive explanation at C1-C2.",
     "If the learner struggles twice, simplify without announcing failure. Conduct the main exchange in English and never shame the learner.",
+    "Keep reply_en under 70 words, reply_ko concise, and evidence under 25 words.",
     "reply_ko must be a faithful natural Korean translation of reply_en.",
-    "evidence must state only short, observable language features. Do not include hidden reasoning.",
+    "evidence must be a short Korean summary of observable language features. Do not include hidden reasoning.",
   ].join("\n");
 
   const learnerTranscript = messages
     .filter((message) => message.role === "user")
+    .slice(-4)
     .map((message, index) =>
       "Learner message " + (index + 1) + ":\n" + message.content
     )
@@ -555,9 +557,13 @@ Deno.serve(async (request) => {
     cache_read_input_tokens: 0,
   };
   let response: Response;
+  const providerStartedAt = Date.now();
+  const providerController = new AbortController();
+  const providerTimeout = setTimeout(() => providerController.abort(), 8000);
   try {
     response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: providerController.signal,
       headers: {
         "x-api-key": apiKey,
         "anthropic-version": "2023-06-01",
@@ -592,7 +598,12 @@ Deno.serve(async (request) => {
         },
       }),
     });
-  } catch {
+  } catch (error) {
+    const timedOut = error instanceof Error && error.name === "AbortError";
+    console.warn("coach_provider_failed", {
+      stage: timedOut ? "timeout" : "network",
+      elapsed_ms: Date.now() - providerStartedAt,
+    });
     try {
       await finalizeBudget(
         eventId,
@@ -604,7 +615,13 @@ Deno.serve(async (request) => {
       console.error("API budget settlement failed", String(error));
       return json(origin, { error: "budget_guard_unavailable" }, 503);
     }
-    return json(origin, { error: "coach_upstream_error" }, 502);
+    return json(
+      origin,
+      { error: timedOut ? "coach_upstream_timeout" : "coach_upstream_error" },
+      timedOut ? 504 : 502,
+    );
+  } finally {
+    clearTimeout(providerTimeout);
   }
 
   if (!response.ok) {
@@ -620,7 +637,11 @@ Deno.serve(async (request) => {
       console.error("API budget settlement failed", String(error));
       return json(origin, { error: "budget_guard_unavailable" }, 503);
     }
-    console.error("Anthropic request failed", response.status);
+    console.warn("coach_provider_failed", {
+      stage: "upstream_status",
+      status: response.status,
+      elapsed_ms: Date.now() - providerStartedAt,
+    });
     return json(origin, { error: "coach_upstream_error" }, 502);
   }
 

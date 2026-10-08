@@ -312,12 +312,14 @@ async function coach(request, env) {
     "Use concrete tasks at A1-A2, reasons and comparisons at B1-B2, and ambiguity or trade-offs at C1-C2.",
     "Base the next question on the final learner message. If it names a topic such as music, ask about that exact topic rather than switching topics.",
     "For an ordinary turn, use one short direct acknowledgment and one related question. Avoid formulaic repetition such as 'Thanks for sharing that.'",
+    "Keep reply_en under 70 words, reply_ko concise, answer_frame_en under 45 words, and evidence under 25 words.",
     "reply_ko must be natural Korean learning support that matches reply_en, not a word-for-word translation.",
     "answer_frame_en must be one complete, natural, privacy-safe example answer to the current question. Do not use blanks, underscores, brackets, or placeholders.",
-    "answer_frame_ko must briefly explain that it is a complete example the learner may adapt. evidence must contain only short observable features.",
+    "answer_frame_ko must briefly explain that it is a complete example the learner may adapt. evidence must be a short Korean summary of observable language features.",
   ].join("\n");
   const learnerTranscript = messages
     .filter((message) => message.role === "user")
+    .slice(-4)
     .map((message, index) => "Learner message " + (index + 1) + ":\n" + message.content)
     .join("\n\n");
   const providerMessages = [{
@@ -332,7 +334,7 @@ async function coach(request, env) {
   const model = env.ANTHROPIC_MODEL ?? "claude-haiku-5-5";
   const pricing = MODEL_PRICING[model];
   if (!pricing) return json({ error: "unsupported_budget_model" }, 503);
-  const maxOutputTokens = positiveInteger(env, "ANTHROPIC_MAX_OUTPUT_TOKENS", 700, 300, 1000);
+  const maxOutputTokens = positiveInteger(env, "ANTHROPIC_MAX_OUTPUT_TOKENS", 500, 300, 500);
   const creditUsd = positiveNumber(env, "ANTHROPIC_CREDIT_USD", 20);
   const dailyPercent = positiveNumber(env, "ANTHROPIC_DAILY_BUDGET_PERCENT", 5);
   if (dailyPercent > 100) return json({ error: "invalid_budget_configuration" }, 503);
@@ -355,9 +357,13 @@ async function coach(request, env) {
   };
 
   let response;
+  const providerStartedAt = Date.now();
+  const providerController = new AbortController();
+  const providerTimeout = setTimeout(() => providerController.abort(), 8000);
   try {
     response = await fetch("https://api.anthropic.com/v1/messages", {
       method: "POST",
+      signal: providerController.signal,
       headers: {
         "x-api-key": env.ANTHROPIC_API_KEY,
         "anthropic-version": "2023-06-01",
@@ -389,12 +395,24 @@ async function coach(request, env) {
         },
       }),
     });
-  } catch {
+  } catch (error) {
+    const timedOut = error && typeof error === "object" && error.name === "AbortError";
+    console.warn("coach_provider_failed", JSON.stringify({
+      stage: timedOut ? "timeout" : "network",
+      elapsed_ms: Date.now() - providerStartedAt,
+    }));
     await finalizeBudget(env, eventId, usageDate, estimate, estimate, emptyUsage, "upstream_uncertain");
-    return json({ error: "coach_upstream_error" }, 502);
+    return json({ error: timedOut ? "coach_upstream_timeout" : "coach_upstream_error" }, timedOut ? 504 : 502);
+  } finally {
+    clearTimeout(providerTimeout);
   }
   if (!response.ok) {
     await response.text();
+    console.warn("coach_provider_failed", JSON.stringify({
+      stage: "upstream_status",
+      status: response.status,
+      elapsed_ms: Date.now() - providerStartedAt,
+    }));
     const uncertainCost = response.status >= 500 ? estimate : 0;
     await finalizeBudget(
       env,
@@ -413,6 +431,10 @@ async function coach(request, env) {
     providerResult = await response.json();
     usage = usageFromProvider(providerResult);
   } catch {
+    console.warn("coach_provider_failed", JSON.stringify({
+      stage: "invalid_json",
+      elapsed_ms: Date.now() - providerStartedAt,
+    }));
     await finalizeBudget(env, eventId, usageDate, estimate, estimate, emptyUsage, "invalid_response");
     return json({ error: "invalid_coach_response" }, 502);
   }
@@ -420,12 +442,14 @@ async function coach(request, env) {
   await finalizeBudget(env, eventId, usageDate, estimate, actualCost, usage, "completed");
   const outputText = providerResult.content?.find((item) => item.type === "text")?.text;
   if (typeof outputText !== "string" || !outputText.trim()) {
+    console.warn("coach_provider_failed", JSON.stringify({ stage: "empty_output" }));
     return json({ error: "empty_coach_response" }, 502);
   }
   let structured;
   try {
     structured = JSON.parse(outputText);
   } catch {
+    console.warn("coach_provider_failed", JSON.stringify({ stage: "invalid_structured_output" }));
     return json({ error: "invalid_coach_response" }, 502);
   }
   for (const key of ["translated_input_en", "reply_en", "reply_ko", "answer_frame_en", "answer_frame_ko", "evidence"]) {
