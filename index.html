@@ -211,7 +211,7 @@
 </head>
 <body>
   <main class="shell">
-    <header><div class="brand"><p>AI응용 · 팀과제 포트폴리오</p><h1>1조</h1></div><div class="byline">팀과제 2 · StepUp English<br>Part 1 후보 프롬프트 v0.2</div></header>
+    <header><div class="brand"><p>AI응용 · 팀과제 포트폴리오</p><h1>1조</h1></div><div class="byline">팀과제 2 · StepUp English<br>Part 1 후보 프롬프트 v0.3</div></header>
     <div class="sync-strip" role="status" aria-live="polite"><span class="sync-dot" id="syncDot"></span><span id="syncStatus">정적 스냅샷</span><time id="syncUpdated"></time></div>
     <section id="panel-team" aria-labelledby="team-title" data-panel="team">
     <div class="section-head"><div><p class="eyebrow">팀과제 · CEFR Adaptive Coach</p><h2 id="team-title">StepUp English 회화 챗봇</h2></div><span class="status caution">실제 팀 검증 대기</span></div>
@@ -224,7 +224,7 @@
     <section class="assignment-view" role="tabpanel" id="team-panel-results" aria-labelledby="team-tab-results" data-assignment="team" data-assignment-panel="results">
 
       <h3 class="primary-action-heading">직접 대화해보기</h3>
-      <p class="coach-intro">먼저 <strong>연습 시작</strong> 버튼을 누르세요. 설정이 끝나면 현재 질문에 맞는 예문을 입력창에 넣어 바꿔 쓸 수 있으며, 예문은 자동 전송되지 않습니다.</p>
+      <p class="coach-intro">영어 문장을 보내면 바로 연습이 시작됩니다. 예시 답변을 입력창에 넣어 바꿔 쓸 수 있으며, <strong>처음부터 다시</strong>를 누르면 대화와 수준 평가가 초기화됩니다.</p>
       <div class="coach-app">
         <div class="coach-topbar">
           <div class="coach-server-state"><span id="coachMode" class="coach-mode">로컬 데모 모드</span><small>서버 장애 시에도 연습을 계속합니다</small></div>
@@ -253,9 +253,8 @@
             <div class="coach-input-meta"><span id="coachInputStatus" role="status" aria-live="polite">메시지를 입력해 주세요.</span><span id="coachCounter">0/600</span></div>
           </form>
           <div class="coach-quick" aria-label="연습 도구">
-            <button type="button" data-coach-command="/start">연습 시작</button>
+            <button type="button" data-coach-action="restart">처음부터 다시</button>
             <button type="button" data-coach-command="/level">현재 수준</button>
-            <button type="button" data-coach-command="/help">사용 안내</button>
             <button type="button" data-coach-command="/end">연습 종료</button>
           </div>
         </div>
@@ -263,10 +262,10 @@
       </div>
       <div class="metrics"><article class="metric"><span class="metric-label">합성 시나리오</span><strong>3개</strong><small>A1·B1·B2→C1</small></article><article class="metric"><span class="metric-label">학습자 발화</span><strong>18회</strong><small>시나리오당 6회</small></article><article class="metric"><span class="metric-label">수준 변화</span><strong>B2→C1</strong><small>합성 기능 검증</small></article></div>
       <h3>상호작용 흐름</h3>
-      <ol class="steps"><li>/start로 목표·주제·한국어 지원 수준 설정</li><li>독립 영어 응답 6개 수집</li><li>최초 CEFR 잠정 추정</li><li>이후 5개 응답마다 근거 기반 재평가</li><li>/end로 한계가 포함된 세션 보고서 생성</li></ol>
+      <ol class="steps"><li>첫 문장 전송으로 연습 자동 시작</li><li>예시·자동 변환을 포함한 학습 답변 수집</li><li>6개 답변 뒤 최초 CEFR 잠정 추정</li><li>이후 5개 답변마다 근거 기반 재평가</li><li>연습 종료 시 즉시 잠정 평가 보고서 생성</li></ol>
       <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
       <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
-      <details class="code-details"><summary>적용 프롬프트 보기 <span>part1_prompt_구범용 v0.2</span></summary><div class="code-cell"><span class="cell-label">SYSTEM PROMPT · 독립 작성본</span><pre><code>You are StepUp English, an adaptive English conversation coach.
+      <details class="code-details"><summary>적용 프롬프트 보기 <span>part1_prompt_구범용 v0.3</span></summary><div class="code-cell"><span class="cell-label">SYSTEM PROMPT · 독립 작성본</span><pre><code>You are StepUp English, an adaptive English conversation coach.
 
 Your purpose is to help an adult learner practice spoken-style English through text conversation, estimate a provisional CEFR level, adapt question difficulty, give concise feedback, and show progress without pretending to provide an official language certificate.
 
@@ -291,15 +290,12 @@ Follow every rule below throughout the session.
 
 Maintain the following state internally for the current chat:
 
-- session_status: not_started, setup, diagnostic, practice, or ended
-- learner_goal
-- preferred_topics
-- korean_support: none, brief, or full
+- session_status: diagnostic, practice, or ended
 - feedback_mode: on or paused
-- independent_response_count
+- learner_response_count
 - current_cefr: estimating, A1, A2, B1, B2, C1, or C2
 - confidence: low, medium, or high
-- assessment_window: the most recent independent English responses
+- assessment_window: the most recent learner responses
 - level_history
 - observed_strengths
 - priority_gap
@@ -310,55 +306,40 @@ Reset all state when the learner enters `/reset` as the entire message.
 
 Recognize a command only when the learner&#x27;s entire trimmed message matches one of these commands. Do not execute a command merely because it appears inside a quotation, example, or longer sentence.
 
-- `/start`: begin a new session
-- `/level`: show the current provisional CEFR estimate, confidence, brief evidence, and number of independent responses until the next review
+- `/start`: clear the current session and restart immediately
+- `/level`: show the current provisional CEFR estimate, confidence, brief evidence, and number of learner responses until the next review
 - `/help`: show the available commands and one-line descriptions
 - `/translate`: translate only the coach&#x27;s immediately preceding English message into Korean, then continue in English
 - `/feedback off`: pause correction while keeping the conversation active
 - `/feedback on`: resume correction
-- `/reset`: erase the session state and return to not_started
+- `/reset`: erase the session state and restart immediately
 - `/end`: end the session and produce the session report
 
-If the learner has not started a session, briefly explain the purpose and ask them to type `/start`.
+5. Automatic start and restart
 
-5. Start and setup
-
-When the learner enters `/start`:
-
-1) Reset any earlier session state.
-2) Explain in no more than three short sentences that the coach will use conversation to make a provisional CEFR estimate and adapt difficulty.
-3) Ask these setup questions one at a time:
-   - What is your main English goal? Give examples such as travel, work, study, or daily conversation.
-   - Which general topics do you enjoy discussing?
-   - How much Korean help do you want: none, brief, or full?
-4) Do not ask for identifying information.
-5) After setup, begin the diagnostic conversation.
+- Start the diagnostic conversation as soon as the learner sends any ordinary English or Korean sentence. Do not require a setup flow or `/start` first.
+- When the learner enters `/start` or `/reset`, erase the earlier conversation and assessment state, then immediately return to diagnostic mode.
+- The learner&#x27;s next ordinary sentence after an ended session starts a fresh session automatically.
+- Do not ask for identifying information.
 
 6. Initial diagnostic
 
-- Collect six independent English responses before assigning the first CEFR level.
+- Collect six learner responses before assigning the first regular CEFR estimate.
 - Ask one open-ended question at a time.
 - Vary the task across personal routine without private details, past experience, preference with a reason, explanation, comparison, and a simple hypothetical situation.
 - Do not supply a complete personal answer before the learner responds.
 - For each question, provide one complete, natural, privacy-safe example answer with no blanks or placeholders.
-- Label a copied example as assisted practice and exclude it from independent CEFR evidence.
+- Count copied examples and automatic Korean-to-English translations as learner responses and include them in the provisional CEFR evidence.
 - Keep questions understandable and adjust the next question if the learner cannot engage.
-- During the six diagnostic responses, give only minimal conversational support. Do not rewrite the learner&#x27;s answer before recording the evidence.
-- After the sixth independent response, assign one provisional CEFR level and a confidence rating.
+- During the six diagnostic responses, give only minimal conversational support.
+- After the sixth learner response, assign one provisional CEFR level and a confidence rating.
 
 7. Evidence rules
 
-Count a response as independent evidence only when the learner produces their own English without the coach first supplying the target answer.
-
-Do not count these as independent evidence:
-
-- a copied model answer
-- a direct translation produced by the coach
-- a response composed mainly from words the coach just supplied
-- a one-word confirmation such as yes, no, or okay when the task required more language
-- text explicitly marked as a quotation from another source
-
-You may use assisted responses for practice, but label them as assisted and exclude them from level-change evidence.
+- Count every non-command practice response sent by the learner, including copied examples and automatic Korean-to-English translations.
+- Use the English text actually practised in the conversation as provisional evidence.
+- Do not let a single copied, translated, memorized, one-word, or quoted answer raise the level by itself. Judge consistency across the full response window.
+- When the sample is small or heavily supported, keep confidence low and state that limitation in the report.
 
 8. CEFR estimation
 
@@ -383,7 +364,7 @@ Choose the lowest level that the learner demonstrates consistently across multip
 
 9. Reassessment and level changes
 
-- After the initial estimate, review the level after every five new independent responses.
+- After the initial estimate, review the level after every five new learner responses.
 - Display a short CEFR check at each review even when the level does not change.
 - Change by no more than one CEFR step at a time.
 - Raise the level only when two consecutive assessment windows support the higher level and no major dimension remains clearly below it.
@@ -397,7 +378,7 @@ Use this format:
 Current estimate: B1
 Confidence: medium
 Evidence: Gives connected reasons; recurring tense errors sometimes blur time order.
-Next review: 5 independent responses
+Next review: 5 learner responses
 Reminder: This is a provisional text-based estimate, not an official score.
 
 10. Adaptive conversation
@@ -408,31 +389,31 @@ Reminder: This is a provisional text-based estimate, not an official score.
 - At B1-B2, ask for reasons, comparisons, examples, and practical problem solving.
 - At C1-C2, use ambiguity, trade-offs, synthesis, and audience-sensitive explanation.
 - Increase difficulty gradually. If the learner struggles twice in a row, simplify the next question without announcing failure.
-- Use the learner&#x27;s stated goals and preferred general topics, but avoid private details.
+- Use the topic in the learner&#x27;s latest response, but avoid private details.
 - Keep the next question connected to the learner&#x27;s latest meaning. If the learner names a topic such as music, stay with that topic unless the learner changes it.
 
 11. Feedback loop
 
-When feedback_mode is on, respond in this order after an independent learner answer:
+When feedback_mode is on, respond in this order after a learner answer:
 
 1) Give a brief natural response to the meaning.
 2) Select at most two high-impact language points.
 3) Show a concise correction or improved phrase.
-4) Explain the reason briefly. Use Korean only according to korean_support.
+4) Explain the reason briefly in natural Korean when Korean support is displayed.
 5) Ask the learner to apply one correction in a new sentence or continue with a related question.
 
 Do not correct every error. Prioritize errors that block meaning, repeat often, or match the current priority gap.
 
 If the answer is already effective, name one specific strength and ask a slightly more challenging follow-up. Do not invent an error.
 
-When feedback_mode is paused, continue the conversation without correction. Still collect independent evidence, but do not penalize the learner for choosing to pause feedback.
+When feedback_mode is paused, continue the conversation without correction. Still collect the response as evidence, but do not penalize the learner for choosing to pause feedback.
 
 12. Language policy
 
 - Conduct the main conversation in English.
-- If korean_support is brief, use one short Korean sentence only when an explanation would otherwise block learning.
-- If korean_support is full, Korean may explain grammar or task instructions, but the learner should still answer mainly in English.
-- `/translate` translates only the immediately preceding coach message. It must not generate the learner&#x27;s answer.
+- Use concise, natural Korean support for the coach&#x27;s English response when the interface setting is enabled.
+- When a learner writes in Korean and automatic conversion is enabled, convert it to natural learner-appropriate English and include that practised English in the assessment sample.
+- `/translate` translates only the immediately preceding coach message.
 - Never shame the learner or use labels such as bad, weak, or failure.
 
 13. Level inquiry
@@ -443,7 +424,7 @@ When the learner enters `/level`, report:
 - confidence
 - one strength supported by the learner&#x27;s language
 - one current improvement priority
-- number of independent responses until the next review
+- number of learner responses until the next review
 - the official-score disclaimer
 
 Do not reveal hidden calculations or chain-of-thought.
@@ -458,7 +439,7 @@ When the learner enters `/end`:
 
 [SESSION REPORT]
 Goal: ...
-Independent responses: ...
+Learner responses assessed: ...
 Current CEFR estimate: ...
 Confidence: ...
 Observable strengths: ...
@@ -468,7 +449,7 @@ Level history: ...
 Recommended next practice: ...
 Limit: The estimate is based only on this text conversation and is not an official CEFR score.
 
-If fewer than six independent responses exist, report the level as estimating or low confidence and explain that the sample is too small.
+Always show the report immediately when `/end` is entered. If at least one learner response exists, give the best provisional CEFR estimate with low confidence when fewer than six responses exist. If no learner response exists, state that there is not enough evidence to estimate a level.
 
 15. Response discipline
 
@@ -488,7 +469,7 @@ If fewer than six independent responses exist, report the level as estimating or
       <details class="requirements-details" open><summary><span><span class="requirements-icon" aria-hidden="true">✓</span>과제 요구사항</span><small>펼쳐보기</small></summary><div class="requirements-body"><ul><li>영어 대화 중 학습자의 CEFR 수준(A1~C2)을 주기적으로 평가하고 표시한다.</li><li>평가 결과가 변하면 학습자에게 수준 변화를 알린다.</li><li>구체적인 교정과 다음 질문으로 회화 능력 향상을 돕는다.</li><li>챗봇 모드를 시작하고 종료하는 트리거를 제공한다.</li><li>서로 다른 수준의 대화 3개를 만들고 최소 1개에는 수준 변화가 있어야 한다.</li><li>팀원 사용·관찰·인터뷰·KJ 분석과 디자인 모델을 바탕으로 프롬프트를 개선한다.</li></ul><p class="requirements-note">제출물: 최초·개선 프롬프트, 대화 예시, UX 분석 결과와 개선 챗봇 작동 예시</p></div></details>
       <div class="data-intro"><div><span>INPUT</span><strong>CEFR 기준 · 명령어 · 합성 시나리오 3개</strong></div><p>현재 시나리오는 기능 검증용 합성 자료이며 실제 팀원 관찰·인터뷰 결과가 아닙니다.</p></div>
       <h3>입력 시나리오</h3><ol class="steps"><li><strong>A1 여행 준비</strong> · A1 → A1 · 12개 메시지</li><li><strong>B1 업무 대화</strong> · B1 → B1 · 12개 메시지</li><li><strong>B2에서 C1 변화</strong> · B2 → C1 · 12개 메시지</li></ol>
-      <h3>명령과 재평가 조건</h3><ul class="check-list"><li><code>/start</code>로 목표·선호 주제·한국어 지원 수준을 한 문항씩 설정</li><li>독립 영어 응답 6개 뒤 최초 CEFR 추정</li><li>이후 독립 응답 5개마다 재평가하며 수준 변경은 연속 두 구간의 근거를 요구</li><li><code>/level</code>로 현재 추정과 다음 검토까지 남은 응답 수 확인</li><li><code>/help</code>, <code>/translate</code>, <code>/feedback on|off</code>, <code>/reset</code>, <code>/end</code> 지원</li></ul>
+      <h3>시작과 재평가 조건</h3><ul class="check-list"><li>영어·한국어 문장을 보내면 별도 설정 없이 연습을 자동 시작</li><li>예시 답변과 한국어 자동 변환을 포함한 학습 답변 6개 뒤 최초 CEFR 추정</li><li>이후 학습 답변 5개마다 재평가하며 수준 변경은 연속 두 구간의 근거를 요구</li><li><strong>처음부터 다시</strong>는 대화와 수준 평가를 모두 초기화</li><li><strong>현재 수준</strong>으로 추정과 다음 검토까지 남은 응답 수 확인</li><li><strong>연습 종료</strong>를 누르면 응답 수와 관계없이 즉시 잠정 평가 보고서 표시</li></ul>
       <div class="notice"><strong>팀 검증 계획</strong><p>팀명·참여자·실제 사용 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
 
     </section>
@@ -605,25 +586,26 @@ If fewer than six independent responses exist, report the level as estimating or
       let learnerTurns = 0;
       let currentLevel = 'estimating';
       let confidence = 'low';
-      let sessionStatus = 'not_started';
-      let setupStep = 0;
+      let sessionStatus = 'diagnostic';
       let feedbackMode = true;
       let pendingLevel = '';
       let pendingLevelCount = 0;
       let lastCoachEnglish = '';
       let lastCoachKorean = '';
       let coachBusy = false;
-      let assistedDraft = false;
       let currentAnswerFrame = {
-        en: 'Type /start to begin.',
-        ko: '먼저 세션을 시작하세요.'
+        en: 'I enjoy listening to music because it helps me relax after work.',
+        ko: '첫 문장을 시작할 때 참고할 수 있는 완성 예시입니다.'
       };
-      const learnerProfile = { goal: '', topic: '', korean_support: 'brief' };
 
       function nextReviewIn() {
         if (learnerTurns < 6) return 6 - learnerTurns;
         const remainder = (learnerTurns - 6) % 5;
         return remainder === 0 ? 5 : 5 - remainder;
+      }
+
+      function confidenceInKorean() {
+        return ({ low: '낮음', medium: '보통', high: '높음' })[confidence] || confidence;
       }
 
       function assessmentDue() {
@@ -637,7 +619,7 @@ If fewer than six independent responses exist, report the level as estimating or
           ? learnerTurns
           : (learnerTurns - 6) % 5;
         coachLevel.textContent = currentLevel === 'estimating'
-          ? '현재 추정: 산정 중 · ' + remaining + '개 남음'
+          ? '수준 평가 중 · 학습 답변 ' + learnerTurns + '/6개'
           : '현재 추정: ' + currentLevel + ' · 다음 검토 ' + remaining + '개';
         coachProgress.max = cycleSize;
         coachProgress.value = Math.min(completed, cycleSize);
@@ -651,14 +633,9 @@ If fewer than six independent responses exist, report the level as estimating or
         learnerTurns = 0;
         currentLevel = 'estimating';
         confidence = 'low';
-        setupStep = 0;
         feedbackMode = true;
         pendingLevel = '';
         pendingLevelCount = 0;
-        learnerProfile.goal = '';
-        learnerProfile.topic = '';
-        learnerProfile.korean_support = 'brief';
-        assistedDraft = false;
         currentAnswerFrame = { en: '', ko: '' };
         coachAnswerFrame.hidden = true;
         renderCoachLevel();
@@ -666,48 +643,6 @@ If fewer than six independent responses exist, report the level as estimating or
 
       function hasHangul(text) {
         return /[ㄱ-ㅎㅏ-ㅣ가-힣]/.test(text);
-      }
-
-      function clipPreference(value) {
-        return value.trim().replace(/\s+/g, ' ').slice(0, 80);
-      }
-
-      function normalizeKoreanSupport(value) {
-        const lowered = value.trim().toLowerCase();
-        if (/none|no korean|없|필요 없/.test(lowered)) return 'none';
-        if (/full|충분|자세|많/.test(lowered)) return 'full';
-        return 'brief';
-      }
-
-      function preferenceLabel(value, kind, language) {
-        const lowered = value.trim().toLowerCase();
-        const maps = kind === 'goal'
-          ? {
-              work: ['work', '업무', '직장', '비즈니스'],
-              travel: ['travel', 'trip', '여행'],
-              study: ['study', 'school', '학업', '공부'],
-              'daily conversation': ['daily', 'conversation', '일상', '회화']
-            }
-          : {
-              music: ['music', 'song', '음악', '노래'],
-              movies: ['movie', 'film', '영화'],
-              travel: ['travel', 'trip', '여행'],
-              work: ['work', 'meeting', '업무', '회의'],
-              food: ['food', 'cooking', '음식', '요리'],
-              sports: ['sport', 'exercise', '운동', '스포츠'],
-              'daily life': ['daily', 'routine', '일상']
-            };
-        const korean = {
-          work: '업무', travel: '여행', study: '학업', 'daily conversation': '일상 회화',
-          music: '음악', movies: '영화', food: '음식', sports: '운동', 'daily life': '일상생활'
-        };
-        for (const [label, keywords] of Object.entries(maps)) {
-          if (keywords.some(keyword => lowered.includes(keyword))) {
-            return language === 'ko' ? korean[label] : label;
-          }
-        }
-        if (!value) return language === 'ko' ? (kind === 'goal' ? '회화' : '관심 있는 주제') : (kind === 'goal' ? 'conversation' : 'your interests');
-        return value;
       }
 
       function completeTopicExample(topic) {
@@ -761,6 +696,24 @@ If fewer than six independent responses exist, report the level as estimating or
         return bubble;
       }
 
+      function restartCoachSession() {
+        resetCoachState();
+        sessionStatus = 'diagnostic';
+        coachLog.replaceChildren();
+        appendCoachMessage(
+          'assistant',
+          'Send any English sentence to begin your practice.',
+          '연습할 영어 문장을 보내면 바로 시작됩니다.'
+        );
+        setCoachAnswerFrame({
+          answer_frame_en: 'I enjoy listening to music because it helps me relax after work.',
+          answer_frame_ko: '첫 문장을 시작할 때 참고할 수 있는 완성 예시입니다.'
+        });
+        coachInput.value = '';
+        updateCoachInput();
+        coachInput.focus();
+      }
+
       function localTranslateKorean(text) {
         const rules = [
           [/업무.*영어|영어.*업무|회사.*영어/, 'I want to practice English for work.'],
@@ -782,7 +735,7 @@ If fewer than six independent responses exist, report the level as estimating or
 
       function estimateLocalLevel() {
         const text = coachMessages
-          .filter(item => item.role === 'user' && !item.content.startsWith('[ASSISTED'))
+          .filter(item => item.role === 'user')
           .map(item => item.content)
           .join(' ');
         const words = text.trim().split(/\s+/).filter(Boolean);
@@ -841,27 +794,34 @@ If fewer than six independent responses exist, report the level as estimating or
           ? '\n수준 변화: ' + review.previous + ' → ' + currentLevel + '.'
           : '';
         return {
-          en: '\n[CEFR CHECK]\nCurrent estimate: ' + currentLevel + '\nConfidence: ' + confidence + '\nEvidence: Vocabulary range, sentence connection, accuracy, interaction, and task completion in independent answers.' + change + '\nNext review: 5 independent responses\nReminder: This is a provisional text-based estimate, not an official score.',
-          ko: '\n[CEFR 확인]\n현재 추정: ' + currentLevel + '\n신뢰도: ' + confidence + '\n근거: 독립 답변의 어휘 범위, 문장 연결, 정확성, 상호작용과 과제 수행.' + changeKo + '\n다음 검토: 독립 응답 5개 후\n안내: 공식 점수가 아닌 대화 텍스트 기반 잠정 추정입니다.'
+          en: '\n[CEFR CHECK]\nCurrent estimate: ' + currentLevel + '\nConfidence: ' + confidence + '\nEvidence: Vocabulary range, sentence connection, accuracy, interaction, and task completion across the learner responses.' + change + '\nNext review: 5 more learner answers\nReminder: This is a provisional text-based estimate, not an official score.',
+          ko: '\n[학습 수준 확인]\n현재 추정: ' + currentLevel + '\n신뢰도: ' + confidenceInKorean() + '\n근거: 학습 답변의 어휘 범위, 문장 연결, 정확성, 상호작용과 과제 수행.' + changeKo + '\n다음 검토: 학습 답변 5개 후\n안내: 공식 점수가 아닌 대화 텍스트 기반 잠정 추정입니다.'
         };
+      }
+
+      function finalizeAssessment() {
+        if (learnerTurns === 0) return;
+        if (currentLevel === 'estimating') currentLevel = estimateLocalLevel();
+        confidence = learnerTurns >= 6 ? 'medium' : 'low';
+        renderCoachLevel();
       }
 
       function localControlResult(rawText) {
         if (rawText === '/start') {
           resetCoachState();
-          sessionStatus = 'setup';
+          sessionStatus = 'diagnostic';
           return {
-            reply_en: 'Let’s set up your practice. What is your main English goal—work, travel, study, or daily conversation?',
-            reply_ko: '연습 설정을 시작할게요. 업무·여행·학업·일상 회화 중 가장 중요한 영어 목표는 무엇인가요?',
-            answer_frame_en: 'My main goal is to use English confidently at work.',
-            answer_frame_ko: '완성된 예시입니다. 자신의 목표에 맞게 바꿔 써도 됩니다.'
+            reply_en: 'Practice restarted. Send any English sentence to begin.',
+            reply_ko: '연습을 처음부터 다시 시작합니다. 영어 문장을 보내면 바로 진행됩니다.',
+            answer_frame_en: 'I enjoy listening to music because it helps me relax after work.',
+            answer_frame_ko: '첫 문장을 시작할 때 참고할 수 있는 완성 예시입니다.'
           };
         }
         if (rawText === '/level') {
           const levelLabel = currentLevel === 'estimating' ? 'estimating' : currentLevel;
           return {
-            reply_en: '[CEFR CHECK]\nCurrent estimate: ' + levelLabel + '\nConfidence: ' + confidence + '\nIndependent responses: ' + learnerTurns + '\nNext review: ' + nextReviewIn() + ' independent responses\nThis is a provisional text-based estimate, not an official score.',
-            reply_ko: '[CEFR 확인]\n현재 추정: ' + (currentLevel === 'estimating' ? '산정 중' : currentLevel) + '\n신뢰도: ' + confidence + '\n독립 응답: ' + learnerTurns + '개\n다음 검토: ' + nextReviewIn() + '개 후\n공식 점수가 아닌 대화 텍스트 기반 잠정 추정입니다.'
+            reply_en: '[CEFR CHECK]\nCurrent estimate: ' + levelLabel + '\nConfidence: ' + confidence + '\nLearner answers counted: ' + learnerTurns + '/6\nAnswers needed for the next review: ' + nextReviewIn() + '\nCopied examples and automatic translations are included in this practice count.\nThis is a provisional text-based estimate, not an official score.',
+            reply_ko: '[학습 수준 확인]\n현재 수준: ' + (currentLevel === 'estimating' ? '평가 중' : currentLevel) + '\n신뢰도: ' + confidenceInKorean() + '\n평가에 포함된 학습 답변: ' + learnerTurns + '/6개\n다음 수준 확인까지: ' + nextReviewIn() + '개\n예시 답변과 한국어 자동 변환도 이 연습 횟수에 포함됩니다.\n공식 점수가 아닌 대화 텍스트 기반 잠정 추정입니다.'
           };
         }
         if (rawText === '/help') {
@@ -885,83 +845,30 @@ If fewer than six independent responses exist, report the level as estimating or
         }
         if (rawText === '/reset') {
           resetCoachState();
-          sessionStatus = 'not_started';
+          sessionStatus = 'diagnostic';
           return {
-            reply_en: 'Session state has been reset. Type /start when you are ready.',
-            reply_ko: '세션 상태를 초기화했습니다. 준비되면 /start를 입력하세요.'
+            reply_en: 'Practice restarted. Send any English sentence to begin.',
+            reply_ko: '연습을 처음부터 다시 시작합니다. 영어 문장을 보내면 바로 진행됩니다.'
           };
         }
         if (rawText === '/end') {
+          finalizeAssessment();
           sessionStatus = 'ended';
+          coachAnswerFrame.hidden = true;
+          const reportLevelEn = learnerTurns === 0 ? 'Not enough evidence' : currentLevel;
+          const reportLevelKo = learnerTurns === 0 ? '평가 자료 없음' : currentLevel;
+          const sampleNoteEn = learnerTurns < 6 ? '\nSample note: Fewer than six answers were available, so confidence is low.' : '';
+          const sampleNoteKo = learnerTurns < 6 ? '\n표본 안내: 답변이 6개보다 적어 신뢰도는 낮음입니다.' : '';
           return {
-            reply_en: '[SESSION REPORT]\nGoal: English conversation practice\nIndependent responses: ' + learnerTurns + '\nCurrent CEFR estimate: ' + currentLevel + '\nConfidence: ' + confidence + '\nObservable strengths: You kept the exchange moving.\nPriority improvement area: Add specific reasons and examples.\nRecommended next practice: Reuse one corrected expression in a new topic.\nLimit: This estimate is based only on this text conversation and is not an official CEFR score.',
-            reply_ko: '[세션 보고서]\n목표: 영어 회화 연습\n독립 응답: ' + learnerTurns + '개\n현재 CEFR 추정: ' + (currentLevel === 'estimating' ? '산정 중' : currentLevel) + '\n신뢰도: ' + confidence + '\n관찰된 강점: 대화를 계속 이어갔습니다.\n우선 개선점: 구체적인 이유와 예시를 덧붙이기.\n다음 연습: 교정 표현 하나를 새 주제에서 재사용하기.\n한계: 이 결과는 대화 텍스트만으로 만든 잠정 추정이며 공식 CEFR 점수가 아닙니다.'
-          };
-        }
-        if (sessionStatus === 'not_started') {
-          return {
-            reply_en: 'Type /start to begin a new StepUp English session.',
-            reply_ko: '새 StepUp English 세션을 시작하려면 /start를 입력하세요.'
-          };
-        }
-        if (sessionStatus === 'ended') {
-          return {
-            reply_en: 'This session has ended. Type /start for a new session.',
-            reply_ko: '이 세션은 종료되었습니다. 새 세션은 /start로 시작하세요.'
-          };
-        }
-        if (sessionStatus === 'setup') {
-          if (setupStep === 0) {
-            learnerProfile.goal = clipPreference(rawText);
-            setupStep = 1;
-            return {
-              reply_en: 'Got it. Which general topic would you like to discuss?',
-              reply_ko: '좋아요. 어떤 주제로 대화하고 싶나요?',
-              answer_frame_en: 'I’d like to talk about music and concerts.',
-              answer_frame_ko: '완성된 예시입니다. 원하는 주제로 바꿔 써도 됩니다.'
-            };
-          }
-          if (setupStep === 1) {
-            learnerProfile.topic = clipPreference(rawText);
-            setupStep = 2;
-            return {
-              reply_en: 'How much Korean help would you like: none, brief, or full?',
-              reply_ko: '한국어 설명은 없음·간단히·충분히 중 어느 정도가 좋나요?',
-              answer_frame_en: 'Brief Korean help, please.',
-              answer_frame_ko: '원하는 수준에 따라 none, brief, full 중 하나를 써도 됩니다.'
-            };
-          }
-          learnerProfile.korean_support = normalizeKoreanSupport(rawText);
-          setupStep = 3;
-          sessionStatus = 'diagnostic';
-          const goalEn = preferenceLabel(learnerProfile.goal, 'goal', 'en');
-          const goalKo = preferenceLabel(learnerProfile.goal, 'goal', 'ko');
-          const topicEn = preferenceLabel(learnerProfile.topic, 'topic', 'en');
-          const topicKo = preferenceLabel(learnerProfile.topic, 'topic', 'ko');
-          return {
-            reply_en: 'All set. We’ll practise ' + goalEn + ' English through ' + topicEn + '. First question: What do you enjoy most about ' + topicEn + ', and why?',
-            reply_ko: '설정이 끝났어요. ' + topicKo + ' 주제로 ' + goalKo + ' 영어를 연습해 볼게요. 첫 질문입니다. ' + topicKo + '에서 가장 좋아하는 점과 그 이유를 영어로 말해 주세요.',
-            answer_frame_en: completeTopicExample(topicEn),
-            answer_frame_ko: '좋아하는 것, 이유, 구체적인 예시까지 넣은 완성 문장입니다.'
+            reply_en: '[SESSION REPORT]\nLearner answers assessed: ' + learnerTurns + '\nCurrent CEFR estimate: ' + reportLevelEn + '\nConfidence: ' + confidence + sampleNoteEn + '\nObservable strengths: You kept the exchange moving.\nPriority improvement area: Add specific reasons and examples.\nRecommended next practice: Reuse one corrected expression in a new topic.\nLimit: This estimate includes copied examples and automatic translations, is based only on this text conversation, and is not an official CEFR score.',
+            reply_ko: '[연습 평가 보고서]\n평가에 포함된 학습 답변: ' + learnerTurns + '개\n현재 CEFR 추정: ' + reportLevelKo + '\n신뢰도: ' + confidenceInKorean() + sampleNoteKo + '\n관찰된 강점: 대화를 계속 이어갔습니다.\n우선 개선점: 구체적인 이유와 예시를 덧붙이기.\n다음 연습: 교정 표현 하나를 새 주제에서 재사용하기.\n한계: 예시 답변과 한국어 자동 변환도 포함한 대화 텍스트 기반 잠정 추정이며 공식 CEFR 점수가 아닙니다.'
           };
         }
         return null;
       }
 
-      function countsAsIndependent(text, translatedByCoach, usedAnswerFrame = false) {
-        if (translatedByCoach || usedAnswerFrame || hasHangul(text)) return false;
-        if (/^\s*["'“”‘’]/.test(text)) return false;
-        return text.trim().split(/\s+/).filter(Boolean).length >= 2;
-      }
-
-      function localCoachResult(coachText, translationLimited = false, independent = true) {
+      function localCoachResult(coachText, translationLimited = false) {
         const trimmed = coachText.trim();
-        if (!independent) {
-          return {
-            reply_en: 'I can use that for practice, but it is marked as assisted and will not count toward your CEFR evidence. Please answer the next question in your own English.',
-            reply_ko: '연습에는 사용할 수 있지만 보조 응답으로 표시되어 CEFR 근거에는 포함하지 않습니다. 다음 질문에는 직접 작성한 영어로 답해 주세요.'
-          };
-        }
         const review = assessmentDue()
           ? applyAssessmentCandidate(estimateLocalLevel())
           : { changed: false, previous: currentLevel };
@@ -1036,22 +943,20 @@ If fewer than six independent responses exist, report the level as estimating or
         return data;
       }
 
-      async function submitCoachMessage(raw, submittedFromFrame = false) {
+      async function submitCoachMessage(raw) {
         const text = raw.trim();
         if (!text || coachBusy) return;
-        const usedAnswerFrame = submittedFromFrame || assistedDraft;
-        assistedDraft = false;
         const isCommand = COMMANDS.has(text);
-        const userBubble = appendCoachMessage('user', text);
+        if (!isCommand && sessionStatus === 'ended') restartCoachSession();
+        const commandLabels = { '/start': '처음부터 다시', '/reset': '처음부터 다시', '/level': '현재 수준', '/end': '연습 종료' };
+        const userBubble = appendCoachMessage('user', commandLabels[text] || text);
         coachBusy = true;
         coachSend.disabled = true;
         coachInput.disabled = true;
         coachInputStatus.textContent = '코치가 답변을 준비하고 있습니다.';
         let result;
-        let serverIndependent = false;
-        const controlResult = isCommand || sessionStatus === 'not_started' || sessionStatus === 'setup' || sessionStatus === 'ended'
-          ? localControlResult(text)
-          : null;
+        let serverResponsePending = false;
+        const controlResult = isCommand ? localControlResult(text) : null;
         const translateKorean = !controlResult && coachAutoTranslate.checked && hasHangul(text);
         const runPracticeLocal = () => {
           let coachText = text;
@@ -1066,11 +971,9 @@ If fewer than six independent responses exist, report the level as estimating or
               coachText
             );
           }
-          const independent = countsAsIndependent(text, translateKorean, usedAnswerFrame);
-          const storedText = independent ? coachText : '[ASSISTED - EXCLUDE FROM CEFR EVIDENCE] ' + coachText;
-          coachMessages.push({ role: 'user', content: storedText });
-          if (independent) learnerTurns += 1;
-          return localCoachResult(coachText, translationLimited, independent);
+          coachMessages.push({ role: 'user', content: coachText });
+          learnerTurns += 1;
+          return localCoachResult(coachText, translationLimited);
         };
         try {
           if (controlResult) {
@@ -1082,19 +985,15 @@ If fewer than six independent responses exist, report the level as estimating or
             if (translateKorean) {
               coachText = text;
             }
-            const independent = countsAsIndependent(text, translateKorean, usedAnswerFrame);
-            serverIndependent = independent;
-            coachMessages.push({
-              role: 'user',
-              content: independent ? coachText : '[ASSISTED - EXCLUDE FROM CEFR EVIDENCE] ' + coachText
-            });
-            if (independent) learnerTurns += 1;
+            serverResponsePending = true;
+            coachMessages.push({ role: 'user', content: coachText });
+            learnerTurns += 1;
             result = await serverCoachReply(translateKorean);
             if (translateKorean && result.translated_input_en) {
-              coachMessages[coachMessages.length - 1].content = '[ASSISTED - EXCLUDE FROM CEFR EVIDENCE] ' + result.translated_input_en;
+              coachMessages[coachMessages.length - 1].content = result.translated_input_en;
               setBubbleTranslation(userBubble, '영어 변환', result.translated_input_en);
             }
-            if (assessmentDue() && independent && result.level) {
+            if (assessmentDue() && result.level) {
               const review = applyAssessmentCandidate(result.level);
               const notice = assessmentNotice(review);
               result.reply_en = (result.reply_en || result.reply || '') + notice.en;
@@ -1112,7 +1011,7 @@ If fewer than six independent responses exist, report the level as estimating or
           coachMode.textContent = '서버 연결 실패 · 로컬 데모';
           coachMode.className = 'coach-mode degraded';
           if (coachMessages.at(-1)?.role === 'user') coachMessages.pop();
-          if (serverIndependent) learnerTurns = Math.max(0, learnerTurns - 1);
+          if (serverResponsePending) learnerTurns = Math.max(0, learnerTurns - 1);
           result = runPracticeLocal();
         }
         const replyEnglish = result.reply_en || result.reply;
@@ -1136,7 +1035,6 @@ If fewer than six independent responses exist, report the level as estimating or
         coachInput.style.height = 'auto';
         coachInput.style.height = Math.min(coachInput.scrollHeight, 156) + 'px';
         coachCounter.textContent = coachInput.value.length + '/600';
-        if (!coachInput.value.trim()) assistedDraft = false;
         if (!coachBusy) coachInputStatus.textContent = coachInput.value.trim()
           ? 'Enter로 보내거나 Shift+Enter로 줄을 바꿀 수 있습니다.'
           : '메시지를 입력해 주세요.';
@@ -1145,10 +1043,9 @@ If fewer than six independent responses exist, report the level as estimating or
       coachForm.addEventListener('submit', event => {
         event.preventDefault();
         const value = coachInput.value;
-        const submittedFromFrame = assistedDraft;
         coachInput.value = '';
         updateCoachInput();
-        submitCoachMessage(value, submittedFromFrame);
+        submitCoachMessage(value);
       });
       coachInput.addEventListener('input', updateCoachInput);
       coachInput.addEventListener('keydown', event => {
@@ -1159,21 +1056,15 @@ If fewer than six independent responses exist, report the level as estimating or
       });
       coachUseFrame.addEventListener('click', () => {
         coachInput.value = currentAnswerFrame.en;
-        assistedDraft = true;
         updateCoachInput();
-        coachInputStatus.textContent = '완성된 예시를 입력했습니다. 그대로 쓰거나 자신의 내용으로 바꿀 수 있습니다. CEFR 독립 근거에서는 제외됩니다.';
+        coachInputStatus.textContent = '완성된 예시를 입력했습니다. 그대로 보내거나 자신의 내용으로 바꿀 수 있으며 학습 답변 수에 포함됩니다.';
         coachInput.focus();
       });
       document.querySelectorAll('[data-coach-command]').forEach(button => {
         button.addEventListener('click', () => submitCoachMessage(button.dataset.coachCommand));
       });
-      appendCoachMessage(
-        'assistant',
-        'Hello! Choose Start practice below when you are ready.',
-        '안녕하세요! 준비되면 아래 연습 시작 버튼을 눌러 주세요.'
-      );
-      updateCoachInput();
-      renderCoachLevel();
+      document.querySelector('[data-coach-action="restart"]').addEventListener('click', restartCoachSession);
+      restartCoachSession();
 
       const syncDot = document.querySelector('#syncDot');
       const syncStatus = document.querySelector('#syncStatus');
