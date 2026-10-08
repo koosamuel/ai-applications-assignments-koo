@@ -219,7 +219,7 @@
           <button type="button" data-coach-command="/help">/help</button>
           <button type="button" data-coach-command="/end">/end</button>
         </div>
-        <p class="coach-help">한국어 원문은 화면에 남고 영어 변환문으로 코칭합니다. Supabase 연결 전 로컬 변환은 주요 학습 문장만 지원하며, 연결 후 임의 문장도 AI 서버에서 변환합니다.</p>
+        <p class="coach-help">한국어 원문은 화면에 남고 영어 변환문으로 코칭합니다. 로컬에서는 주요 학습 문장만 예시로 변환하며, 배포 후에는 임의 문장도 AI 서버에서 변환합니다.</p>
       </div>
       <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
       <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
@@ -445,7 +445,7 @@ If fewer than six independent responses exist, report the level as estimating or
     </section>
 
     <aside class="live-update" data-live="team" hidden><strong>Realtime 업데이트</strong><p></p><time></time></aside></section>
-    <footer>AI응용 1조 팀과제 · 정적 데모와 선택적 Supabase 서버 연동을 지원합니다.</footer>
+    <footer>AI응용 1조 팀과제 · Sites Worker와 D1 기반 AI 서버를 사용합니다.</footer>
   </main>
   <script>
     (() => {
@@ -566,6 +566,10 @@ If fewer than six independent responses exist, report the level as estimating or
       const coachShowKorean = document.querySelector('#coachShowKorean');
       const publicUrl = document.querySelector('meta[name="supabase-url"]').content;
       const publicKey = document.querySelector('meta[name="supabase-publishable-key"]').content;
+      const isSitesDeployment = /(^|\.)chatgpt\.site$/.test(location.hostname);
+      const coachEndpoint = publicUrl && publicKey
+        ? publicUrl.replace(/\/$/, '') + '/functions/v1/english-coach'
+        : isSitesDeployment ? '/api/english-coach' : '';
       const COMMANDS = new Set(['/start', '/level', '/help', '/translate', '/feedback off', '/feedback on', '/reset', '/end']);
       const LEVEL_ORDER = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
       const coachMessages = [];
@@ -866,12 +870,11 @@ If fewer than six independent responses exist, report the level as estimating or
       }
 
       async function serverCoachReply(translateKorean) {
-        const response = await fetch(publicUrl.replace(/\/$/, '') + '/functions/v1/english-coach', {
+        const headers = { 'Content-Type': 'application/json' };
+        if (publicKey) headers.apikey = publicKey;
+        const response = await fetch(coachEndpoint, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'apikey': publicKey
-          },
+          headers,
           body: JSON.stringify({
             messages: coachMessages.slice(-14),
             learner_turns: learnerTurns,
@@ -922,7 +925,7 @@ If fewer than six independent responses exist, report the level as estimating or
         try {
           if (controlResult) {
             result = controlResult;
-          } else if (publicUrl && publicKey) {
+          } else if (coachEndpoint) {
             coachMode.textContent = 'AI 서버 모드';
             coachMode.className = 'coach-mode online';
             let coachText = text;
@@ -1016,7 +1019,23 @@ If fewer than six independent responses exist, report the level as estimating or
         const url = document.querySelector('meta[name="supabase-url"]').content;
         const key = document.querySelector('meta[name="supabase-publishable-key"]').content;
         if (!url || !key) {
-          setSync('정적 스냅샷 · Supabase 설정 대기');
+          if (!isSitesDeployment) {
+            setSync('로컬 데모 · 배포 후 AI 서버 사용');
+            return;
+          }
+          try {
+            const response = await fetch('/api/health', { cache: 'no-store' });
+            if (!response.ok) throw new Error('health check failed');
+            const status = await response.json();
+            if (!status.ok) throw new Error('server unavailable');
+            setSync('AI 서버 연결', 'online');
+            coachMode.textContent = 'AI 서버 모드';
+            coachMode.className = 'coach-mode online';
+          } catch (error) {
+            setSync('AI 서버 연결 확인 필요', 'degraded');
+            coachMode.textContent = '서버 연결 실패 · 로컬 데모';
+            coachMode.className = 'coach-mode degraded';
+          }
           return;
         }
         try {
