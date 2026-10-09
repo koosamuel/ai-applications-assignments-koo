@@ -192,6 +192,20 @@
     .coach-quick { padding-bottom:14px; }
     .coach-quick button { color:#385149; border-color:#c0ccc6; background:#f7f9f7; font-family:inherit; }
     .coach-help { margin:0; padding:12px 16px; color:var(--muted); border-top:1px solid var(--line); font-size:.8rem; }
+    .coach-auto-test { margin:14px; padding:15px; border:1px solid #b9cec7; border-radius:15px; background:#fff; }
+    .coach-auto-head { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+    .coach-auto-head span { display:block; color:var(--accent); font-size:.7rem; font-weight:900; letter-spacing:.08em; }
+    .coach-auto-head h4 { margin:2px 0 0; font-size:1.08rem; }
+    .coach-auto-actions,.coach-auto-downloads { display:flex; flex-wrap:wrap; gap:8px; }
+    .coach-auto-test button { min-height:42px; padding:8px 12px; color:white; border:1px solid var(--accent); border-radius:10px; background:var(--accent); cursor:pointer; font:inherit; font-weight:800; }
+    .coach-auto-test button.secondary { color:#385149; border-color:#b7c9c1; background:#f7f9f7; }
+    .coach-auto-test button:disabled { cursor:not-allowed; opacity:.48; }
+    .coach-auto-test > p { margin:10px 0; color:#56675f; font-size:.8rem; }
+    .coach-auto-test progress { width:100%; height:12px; overflow:hidden; border:0; border-radius:999px; accent-color:var(--accent); }
+    .coach-auto-status { display:flex; justify-content:space-between; gap:12px; margin-top:7px; color:#56675f; font-size:.76rem; }
+    .coach-auto-result { margin-top:14px; padding-top:14px; border-top:1px solid var(--line); }
+    .coach-auto-result h5 { margin:0 0 8px; font-size:.9rem; }
+    .coach-auto-result pre { max-height:360px; margin:0 0 10px; padding:13px; overflow:auto; white-space:pre-wrap; color:#273b34; border:1px solid #d4ded9; border-radius:10px; background:#f7faf8; font:500 .76rem/1.55 ui-monospace,SFMono-Regular,Menlo,monospace; }
     .sr-only { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; border:0; }
 
     .bubble { max-width:86%; padding:16px 18px; border-radius:17px; }
@@ -230,7 +244,7 @@
     footer { padding:24px 4px 0; color:var(--muted); font-size:.84rem; text-align:center; }
     @media (max-width:900px) { .steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
     @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} .coach-cefr-ladder{grid-template-columns:repeat(3,minmax(0,1fr))} .coach-cefr-ladder > span:nth-child(3)::after{display:none} .coach-cefr-stats{grid-template-columns:1fr} }
-    @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-scenarios{align-items:flex-start;flex-direction:column} .coach-scenario-actions{justify-content:flex-start} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-answer-frame{grid-template-columns:1fr} .coach-answer-frame button{width:100%} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-quick{gap:7px} .coach-quick button{flex:1 0 auto} }
+    @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-scenarios{align-items:flex-start;flex-direction:column} .coach-scenario-actions{justify-content:flex-start} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-answer-frame{grid-template-columns:1fr} .coach-answer-frame button{width:100%} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-quick{gap:7px} .coach-quick button{flex:1 0 auto} .coach-auto-head{align-items:flex-start;flex-direction:column} .coach-auto-actions,.coach-auto-downloads{width:100%} .coach-auto-actions button,.coach-auto-downloads button{flex:1} .coach-auto-status{flex-direction:column;gap:2px} }
     @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important} }
     @media print { body{background:white} .shell{width:100%;padding:0} .tabs,.assignment-tabs,.dataset-tabs{display:none} [data-panel]{display:block!important;break-before:page;box-shadow:none;border:0;padding:20px 0} [data-panel]:first-of-type{break-before:auto} .assignment-view,.dataset-panel{display:block!important} .prompt-details:not([open]) > :not(summary){display:block!important} .code-details{display:none} footer{display:none} }
   </style>
@@ -313,10 +327,30 @@
           </div>
           <p id="coachCefrEvidence">세션을 시작한 뒤 직접 작성한 영어 답변 5개가 모이면 첫 잠정 수준을 표시합니다.</p>
         </section>
+        <section class="coach-auto-test" aria-labelledby="coachAutoTitle">
+          <div class="coach-auto-head">
+            <div><span>자동 검증</span><h4 id="coachAutoTitle">세션 3개 전체 실행</h4></div>
+            <div class="coach-auto-actions">
+              <button id="coachAutoStart" type="button">전체 자동 테스트</button>
+              <button id="coachAutoStop" type="button" class="secondary" disabled>중단</button>
+            </div>
+          </div>
+          <p>여행 A2→B1 20개, 사회 이슈 C1 12개, 명령어 기능을 순서대로 검사합니다. 서버 제한을 지키므로 약 6~8분이 걸릴 수 있습니다.</p>
+          <progress id="coachAutoProgress" max="33" value="0">0/33</progress>
+          <div class="coach-auto-status"><strong id="coachAutoStatus" role="status" aria-live="polite">실행 대기</strong><span id="coachAutoCount">0/33 AI 답변</span></div>
+          <div id="coachAutoResult" class="coach-auto-result" hidden>
+            <h5>최종 결과문</h5>
+            <pre id="coachAutoResultText"></pre>
+            <div class="coach-auto-downloads">
+              <button id="coachDownloadMarkdown" type="button">Markdown 저장</button>
+              <button id="coachDownloadJson" type="button" class="secondary">JSON 저장</button>
+            </div>
+          </div>
+        </section>
       </div>
       <div class="metrics"><article class="metric"><span class="metric-label">테스트 세션</span><strong>3개</strong><small>A2→B1 · C1 유지 · 기능</small></article><article class="metric"><span class="metric-label">정기 평가</span><strong>5개마다</strong><small>n=5·10·15·20</small></article><article class="metric"><span class="metric-label">수준 변경</span><strong>한 단계</strong><small>근거 3개 이상</small></article></div>
       <h3>상호작용 흐름</h3>
-      <ol class="steps"><li>/시작으로 주제·목표 설정</li><li>직접 작성한 영어 답변만 집계</li><li>5개 답변 뒤 최초 CEFR 잠정 추정</li><li>이후 5개마다 유지·검토·변경 판정</li><li>/종료 시 즉시 잠정 평가 보고서 생성</li></ol>
+      <ol class="steps"><li>버튼 한 번으로 세 시나리오 순차 실행</li><li>직접 작성·제공 예문 영어 답변 집계</li><li>n=5·10·15·20 평가 시점 자동 기록</li><li>명령어 기능과 서버 대체 응답 확인</li><li>최종 결과문과 Markdown·JSON 파일 생성</li></ol>
       <div class="notice"><strong>현재 데이터 경계</strong><p>대화 UI는 실제 입력에 응답합니다. 아래 B2→C1 기록은 기능 검증용 합성 자료이며, 팀명·참여자·실제 관찰·인터뷰·KJ 분석은 팀 활동 후 확인된 자료로 교체해야 합니다.</p></div>
       <details class="code-details"><summary>B2에서 C1 변화 합성 예시 보기 <span>12개 메시지</span></summary><div class="chat"><div class="bubble user"><span>학습자</span><p>AI can make education more accessible, but access is not equal.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Schools also need teachers who can evaluate generated answers.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>I used to think efficiency was the main benefit.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>However, overreliance may weaken a student&#x27;s independent judgment.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[B2] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>A sensible policy would combine disclosure, human review, and age-appropriate limits.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Let&#x27;s continue with AI in education.</p></div><div class="bubble user"><span>학습자</span><p>Therefore, the real question is not whether to use AI, but how to preserve agency while using it.</p></div><div class="bubble assistant"><span>StepUp English</span><p>[C1] Good point. Session complete. Next, reuse one corrected expression.</p></div></div></details>
       <details class="code-details"><summary>적용 프롬프트 보기 <span>팀 선정안 구현본</span></summary><div class="code-cell"><span class="cell-label">SYSTEM PROMPT · 팀 선정안 기준</span><pre><code>너는 한국어 사용자를 위한 텍스트 영어 회화 코치 &quot;StepUp&quot;이다. 자연스러운 영어 대화, CEFR 기반 잠정 평가, 실제 발화에 근거한 학습 피드백을 제공한다. 학생의 발화를 늘리고, 적절한 도전과 재사용 연습으로 영어 사용 능력을 발전시키는 것이 목적이다.
@@ -504,6 +538,15 @@
       const coachAnswerFrameKo = document.querySelector('#coachAnswerFrameKo');
       const coachUseFrame = document.querySelector('#coachUseFrame');
       const coachFeedbackAction = document.querySelector('[data-coach-action="feedback"]');
+      const coachAutoStart = document.querySelector('#coachAutoStart');
+      const coachAutoStop = document.querySelector('#coachAutoStop');
+      const coachAutoProgress = document.querySelector('#coachAutoProgress');
+      const coachAutoStatus = document.querySelector('#coachAutoStatus');
+      const coachAutoCount = document.querySelector('#coachAutoCount');
+      const coachAutoResult = document.querySelector('#coachAutoResult');
+      const coachAutoResultText = document.querySelector('#coachAutoResultText');
+      const coachDownloadMarkdown = document.querySelector('#coachDownloadMarkdown');
+      const coachDownloadJson = document.querySelector('#coachDownloadJson');
       const publicUrl = document.querySelector('meta[name="supabase-url"]').content;
       const publicKey = document.querySelector('meta[name="supabase-publishable-key"]').content;
       const isSitesDeployment = /(^|\.)chatgpt\.site$/.test(location.hostname);
@@ -528,6 +571,9 @@
       let lastCoachKorean = '';
       let lastEvidence = '';
       let coachBusy = false;
+      let autoTestRunning = false;
+      let autoTestCancelled = false;
+      let autoTestReport = null;
       let currentAnswerFrame = {
         en: '',
         ko: ''
@@ -1041,9 +1087,13 @@
         }
       }
 
-      async function submitCoachMessage(raw) {
+      async function submitCoachMessage(raw, options = {}) {
         const text = raw.trim();
-        if (!text || coachBusy) return;
+        if (!text || coachBusy) return null;
+        if (autoTestRunning && !options.auto) {
+          coachInputStatus.textContent = '자동 테스트가 끝난 뒤 직접 입력할 수 있습니다.';
+          return null;
+        }
         let controlResult = localControlResult(text);
         if (!controlResult && (sessionStatus === 'idle' || sessionStatus === 'ended')) {
           controlResult = {
@@ -1069,6 +1119,8 @@
         let pendingBubble = null;
         let waitTimer = 0;
         let requestStarted = 0;
+        let responseSeconds = 0;
+        let usedFallback = false;
         const countsAsEvidence = !controlResult && isCountableEnglishAnswer(text);
         const translateKorean = !controlResult && coachAutoTranslate.checked && hasHangul(text);
         const runPracticeLocal = () => {
@@ -1122,6 +1174,7 @@
             }
             result = await serverCoachReply(translateKorean, countsAsEvidence);
             const elapsed = (performance.now() - requestStarted) / 1000;
+            responseSeconds = elapsed;
             coachMode.textContent = 'AI 서버 모드';
             coachServerDetail.textContent = '최근 응답 ' + elapsed.toFixed(1) + '초';
             if (translateKorean && result.translated_input_en) {
@@ -1145,6 +1198,8 @@
         } catch (error) {
           console.warn('Coach server unavailable; using local demo.', error);
           const elapsed = requestStarted ? (performance.now() - requestStarted) / 1000 : 0;
+          responseSeconds = elapsed;
+          usedFallback = true;
           coachMode.textContent = 'AI 응답 지연 · 빠른 대체';
           coachMode.className = 'coach-mode degraded';
           coachServerDetail.textContent = elapsed
@@ -1176,13 +1231,271 @@
         lastCoachEnglish = replyEnglish;
         lastCoachKorean = fullReplyKorean;
         coachBusy = false;
-        coachSend.disabled = false;
-        coachInput.disabled = false;
+        coachSend.disabled = autoTestRunning;
+        coachInput.disabled = autoTestRunning;
         coachFeedbackAction.textContent = feedbackMode ? '교정 보류' : '교정 재개';
         coachInputStatus.textContent = coachMode.classList.contains('degraded')
           ? 'AI 응답이 지연되어 빠른 대체 답변을 표시했습니다.'
           : '답변을 받았습니다.';
-        coachInput.focus();
+        if (!autoTestRunning) coachInput.focus();
+        return {
+          input: text,
+          reply_en: replyEnglish,
+          reply_ko: fullReplyKorean,
+          learner_turns: learnerTurns,
+          level: currentLevel,
+          session_status: sessionStatus,
+          assessment_status: assessmentStatus,
+          confidence,
+          evidence: lastEvidence,
+          answer_frame_en: currentAnswerFrame.en,
+          response_seconds: Number(responseSeconds.toFixed(2)),
+          api_call: Boolean(coachEndpoint && !controlResult),
+          fallback: usedFallback
+        };
+      }
+
+      const AUTO_API_INTERVAL_MS = 10500;
+
+      function setAutoProgress(completed, message) {
+        coachAutoProgress.value = completed;
+        coachAutoCount.textContent = completed + '/33 AI 답변';
+        coachAutoStatus.textContent = message;
+      }
+
+      async function waitForAutoInterval() {
+        const slices = Math.ceil(AUTO_API_INTERVAL_MS / 250);
+        for (let index = 0; index < slices && !autoTestCancelled; index += 1) {
+          await new Promise(resolve => window.setTimeout(resolve, 250));
+        }
+      }
+
+      function safeTableCell(value) {
+        return String(value ?? '').replace(/\|/g, '\\|').replace(/\s+/g, ' ').trim();
+      }
+
+      function buildAutoMarkdown(report) {
+        const lines = [
+          '# StepUp 자동 테스트 최종 결과',
+          '',
+          '- 실행 시각: ' + new Date(report.generated_at).toLocaleString('ko-KR'),
+          '- 실행 상태: ' + report.status,
+          '- 실행 모드: ' + report.mode,
+          '- CEFR 평가 답변: ' + report.total_answers + '개',
+          '- 평균 AI 응답시간: ' + report.average_response_seconds.toFixed(2) + '초',
+          '- 로컬 대체 응답: ' + report.fallback_count + '회',
+          '- 개인정보: 수집·표기하지 않음',
+          '',
+          '## 세션별 평가',
+          ''
+        ];
+        report.sessions.filter(session => session.kind === 'cefr').forEach(session => {
+          lines.push('### ' + session.title, '');
+          lines.push('| 평가 시점 | CEFR 판정 | 상태 | 신뢰도 | 최근 근거 |');
+          lines.push('| --- | --- | --- | --- | --- |');
+          session.checkpoints.forEach(point => {
+            lines.push('| n=' + point.n + ' | ' + safeTableCell(point.level) + ' | ' + safeTableCell(point.status) + ' | ' + safeTableCell(point.confidence) + ' | ' + safeTableCell(point.evidence || '기록 없음') + ' |');
+          });
+          lines.push('', '- 최종 판정: ' + session.final_level, '- 평가 답변: ' + session.answer_count + '개', '');
+        });
+        const commandSession = report.sessions.find(session => session.kind === 'commands');
+        if (commandSession) {
+          lines.push('### 명령어 기능 테스트', '');
+          lines.push('| 항목 | 결과 | 확인 내용 |');
+          lines.push('| --- | --- | --- |');
+          commandSession.tests.forEach(test => {
+            lines.push('| ' + safeTableCell(test.label) + ' | ' + (test.passed ? '정상' : '확인 필요') + ' | ' + safeTableCell(test.observed) + ' |');
+          });
+          lines.push('');
+        }
+        const travel = report.sessions.find(session => session.id === 'travel_growth');
+        const social = report.sessions.find(session => session.id === 'social_c1');
+        const travelPath = travel ? travel.checkpoints.map(point => 'n=' + point.n + ' ' + point.level + '(' + point.status + ')').join(' → ') : '미실행';
+        const socialPath = social ? social.checkpoints.map(point => 'n=' + point.n + ' ' + point.level + '(' + point.status + ')').join(' → ') : '미실행';
+        const commandPass = commandSession ? commandSession.tests.filter(test => test.passed).length + '/' + commandSession.tests.length : '미실행';
+        lines.push(
+          '## 종합 결과문',
+          '',
+          '- A2→B1 여행 변화 경로: ' + travelPath,
+          '- C1 사회 이슈 유지 경로: ' + socialPath,
+          '- 명령어 기능 정상 항목: ' + commandPass,
+          '- 서버 안정성: 로컬 대체 응답 ' + report.fallback_count + '회, 평균 응답 ' + report.average_response_seconds.toFixed(2) + '초',
+          '',
+          '자동 결과는 기능·평가 시점 확인 자료입니다. 실제 UX 불편과 소감은 직접 사용 후 별도로 보완해야 합니다.',
+          '',
+          '## 수동 소감 입력란',
+          '',
+          '- 가장 불편했던 순간:',
+          '- CEFR 판정 납득 여부와 이유:',
+          '- 가장 유용했던 피드백:',
+          '- 가장 크게 바꾸고 싶은 점 1개:'
+        );
+        return lines.join('\n');
+      }
+
+      function downloadAutoResult(filename, content, type) {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(url);
+      }
+
+      async function runAutoCefrSession(plan, report, progressState) {
+        await submitCoachMessage(plan.start, { auto: true });
+        const session = {
+          id: plan.id,
+          title: plan.title,
+          kind: 'cefr',
+          target_answers: plan.answers,
+          answer_count: 0,
+          checkpoints: [],
+          turns: [],
+          final_level: '미완료'
+        };
+        report.sessions.push(session);
+        for (let turn = 0; turn < plan.answers && !autoTestCancelled; turn += 1) {
+          const answer = scenarioExample(turn);
+          const output = await submitCoachMessage(answer, { auto: true });
+          if (!output) break;
+          progressState.completed += 1;
+          session.answer_count = output.learner_turns;
+          session.turns.push({
+            n: output.learner_turns,
+            learner: answer,
+            coach_en: output.reply_en,
+            coach_ko: output.reply_ko,
+            level: output.level,
+            status: output.assessment_status,
+            response_seconds: output.response_seconds,
+            fallback: output.fallback
+          });
+          if (output.api_call) report.response_seconds.push(output.response_seconds);
+          if (output.fallback) report.fallback_count += 1;
+          if (output.learner_turns > 0 && output.learner_turns % 5 === 0) {
+            session.checkpoints.push({
+              n: output.learner_turns,
+              level: output.level,
+              status: output.assessment_status,
+              confidence: output.confidence,
+              evidence: output.evidence
+            });
+          }
+          setAutoProgress(progressState.completed, plan.title + ' · ' + output.learner_turns + '/' + plan.answers + '개 완료');
+          if (output.api_call && !autoTestCancelled) await waitForAutoInterval();
+        }
+        if (!autoTestCancelled) {
+          const finalOutput = await submitCoachMessage('/종료', { auto: true });
+          session.final_level = finalOutput?.level || currentLevel;
+          session.final_report = finalOutput?.reply_ko || finalOutput?.reply_en || '';
+        } else {
+          session.final_level = currentLevel;
+        }
+      }
+
+      async function runAutoCommandSession(report, progressState) {
+        await submitCoachMessage('/시작 일상 주제, 명령어 기능 테스트, 한국어 설명', { auto: true });
+        const session = { id: 'commands', title: '명령어 기능 테스트', kind: 'commands', tests: [], turns: [] };
+        report.sessions.push(session);
+        const checks = [
+          { label: '현재 수준 확인', input: '내 수준 알려줘', verify: output => /평가|수준|estimate/i.test(output.reply_ko + output.reply_en) },
+          { label: '도움 요청', input: '도와줘', verify: output => Boolean(output.answer_frame_en) },
+          { label: '교정 보류', input: '교정은 나중에 해줘', verify: output => /보류|paused/i.test(output.reply_ko + output.reply_en) },
+          { label: '영어 답변 집계', input: scenarioExample(0), count: true, verify: output => output.learner_turns === 1 },
+          { label: '교정 재개', input: '다시 교정해줘', verify: output => /재개|active again/i.test(output.reply_ko + output.reply_en) },
+          { label: '잘못된 명령어', input: '/평가', verify: output => /인식하지 못|did not recognize/i.test(output.reply_ko + output.reply_en) },
+          { label: '연습 종료', input: '/종료', verify: output => output.session_status === 'ended' }
+        ];
+        for (const check of checks) {
+          if (autoTestCancelled) break;
+          const output = await submitCoachMessage(check.input, { auto: true });
+          if (!output) break;
+          const passed = Boolean(check.verify(output));
+          session.tests.push({
+            label: check.label,
+            input: check.input,
+            passed,
+            observed: output.reply_ko || output.reply_en,
+            response_seconds: output.response_seconds,
+            fallback: output.fallback
+          });
+          session.turns.push({ learner: check.input, coach_en: output.reply_en, coach_ko: output.reply_ko });
+          if (output.api_call) report.response_seconds.push(output.response_seconds);
+          if (output.fallback) report.fallback_count += 1;
+          if (check.count) {
+            progressState.completed += 1;
+            setAutoProgress(progressState.completed, '명령어 기능 테스트 · 영어 답변 확인');
+          } else {
+            coachAutoStatus.textContent = '명령어 기능 테스트 · ' + check.label;
+          }
+          if (output.api_call && !autoTestCancelled) await waitForAutoInterval();
+        }
+      }
+
+      async function runAllAutoTests() {
+        if (autoTestRunning || coachBusy) return;
+        autoTestRunning = true;
+        autoTestCancelled = false;
+        autoTestReport = null;
+        coachAutoStart.disabled = true;
+        coachAutoStop.disabled = false;
+        coachInput.disabled = true;
+        coachSend.disabled = true;
+        coachAutoResult.hidden = true;
+        const report = {
+          generated_at: new Date().toISOString(),
+          status: '실행 중',
+          mode: coachEndpoint ? 'AI 서버' : '로컬 데모',
+          total_answers: 0,
+          fallback_count: 0,
+          average_response_seconds: 0,
+          response_seconds: [],
+          sessions: []
+        };
+        const progressState = { completed: 0 };
+        setAutoProgress(0, '자동 테스트 준비 중');
+        try {
+          await runAutoCefrSession({
+            id: 'travel_growth',
+            title: '세션 1 · A2→B1 여행',
+            start: '/시작 여행, A2에서 B1 변화 테스트, 한국어 설명',
+            answers: 20
+          }, report, progressState);
+          if (!autoTestCancelled) {
+            await runAutoCefrSession({
+              id: 'social_c1',
+              title: '세션 2 · C1 사회 이슈',
+              start: '/시작 사회 이슈, C1 유지 테스트, 한국어 설명',
+              answers: 12
+            }, report, progressState);
+          }
+          if (!autoTestCancelled) await runAutoCommandSession(report, progressState);
+          report.status = autoTestCancelled ? '사용자 중단' : '완료';
+        } catch (error) {
+          console.error('Automated test failed.', error);
+          report.status = '오류로 중단';
+          report.error = String(error?.message || error);
+        } finally {
+          report.total_answers = progressState.completed;
+          report.average_response_seconds = report.response_seconds.length
+            ? report.response_seconds.reduce((sum, value) => sum + value, 0) / report.response_seconds.length
+            : 0;
+          delete report.response_seconds;
+          report.markdown = buildAutoMarkdown(report);
+          autoTestReport = report;
+          coachAutoResultText.textContent = report.markdown;
+          coachAutoResult.hidden = false;
+          autoTestRunning = false;
+          coachAutoStart.disabled = false;
+          coachAutoStop.disabled = true;
+          coachInput.disabled = false;
+          coachSend.disabled = false;
+          setAutoProgress(progressState.completed, report.status === '완료' ? '전체 테스트 및 최종 보고서 작성 완료' : report.status);
+        }
       }
 
       function updateCoachInput() {
@@ -1219,6 +1532,22 @@
       });
       coachFeedbackAction.addEventListener('click', () => {
         submitCoachMessage(feedbackMode ? '교정은 나중에 해줘' : '다시 교정해줘');
+      });
+      coachAutoStart.addEventListener('click', runAllAutoTests);
+      coachAutoStop.addEventListener('click', () => {
+        autoTestCancelled = true;
+        coachAutoStop.disabled = true;
+        coachAutoStatus.textContent = '현재 응답을 받은 뒤 테스트를 중단합니다.';
+      });
+      coachDownloadMarkdown.addEventListener('click', () => {
+        if (!autoTestReport) return;
+        const date = new Date(autoTestReport.generated_at).toISOString().slice(0, 10);
+        downloadAutoResult('StepUp_자동테스트_결과_' + date + '.md', autoTestReport.markdown, 'text/markdown;charset=utf-8');
+      });
+      coachDownloadJson.addEventListener('click', () => {
+        if (!autoTestReport) return;
+        const date = new Date(autoTestReport.generated_at).toISOString().slice(0, 10);
+        downloadAutoResult('StepUp_자동테스트_전체기록_' + date + '.json', JSON.stringify(autoTestReport, null, 2), 'application/json;charset=utf-8');
       });
       restartCoachSession();
 
