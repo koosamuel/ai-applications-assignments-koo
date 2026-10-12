@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>RAG 카페 Kiosk · 구범용</title>
+  <meta name="description" content="메뉴 검색 근거를 바탕으로 추천·비교·주문을 처리하는 자연어 카페 키오스크">
+  <style>
+    :root {
+      --ink: #17231f;
+      --muted: #5b6b65;
+      --paper: #f5f4ee;
+      --surface: #fffef9;
+      --soft: #e8f3ef;
+      --line: #cbd9d3;
+      --accent: #117d73;
+      --accent-dark: #0c675f;
+      --danger: #a64235;
+      --shadow: 0 20px 50px rgba(29, 53, 46, .10);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: radial-gradient(circle at 15% 0%, #e3f1ec 0, transparent 30rem), var(--paper);
+      font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Noto Sans KR", sans-serif;
+      line-height: 1.55;
+    }
+    button, textarea, input, select { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1120px, calc(100% - 30px)); margin: 0 auto; padding: 38px 0 64px; }
+    header { display: flex; align-items: end; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
+    .eyebrow { margin: 0 0 5px; color: var(--accent); font-size: .76rem; font-weight: 900; letter-spacing: .12em; }
+    h1 { margin: 0; font-size: clamp(2rem, 5vw, 3.6rem); line-height: 1.08; letter-spacing: -.055em; }
+    .subtitle { max-width: 720px; margin: 14px 0 0; color: #415049; }
+    .health { padding: 7px 11px; color: var(--muted); border: 1px solid var(--line); border-radius: 999px; background: var(--surface); font-size: .78rem; font-weight: 800; white-space: nowrap; }
+    .health.online { color: var(--accent-dark); border-color: #8ac7ba; background: #e6f6f1; }
+    .panel { overflow: hidden; border: 1px solid var(--line); border-radius: 24px; background: var(--surface); box-shadow: var(--shadow); }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 22px; background: var(--soft); border-bottom: 1px solid var(--line); }
+    .toolbar strong, .toolbar small { display: block; }
+    .toolbar small { margin-top: 3px; color: var(--muted); }
+    .secondary { min-height: 42px; padding: 9px 14px; color: #37554d; border: 1px solid #b3c9c2; border-radius: 12px; background: white; font-weight: 800; }
+    .content { padding: clamp(16px, 4vw, 28px); }
+    .chat-log { display: grid; align-content: start; gap: 12px; min-height: 260px; max-height: 470px; padding: 18px; overflow-y: auto; border: 1px solid var(--line); border-radius: 17px; background: #f9fbf9; }
+    .message { width: fit-content; max-width: min(82%, 65ch); padding: 12px 14px; border-radius: 15px; }
+    .message span { display: block; margin-bottom: 3px; font-size: .72rem; font-weight: 900; }
+    .message p { margin: 0; white-space: pre-wrap; }
+    .message.assistant { border: 1px solid #bdd5ce; background: white; }
+    .message.assistant span { color: var(--accent-dark); }
+    .message.user { justify-self: end; color: white; background: var(--accent); }
+    .message.user span { color: #d9fff5; }
+    .message.pending { color: var(--muted); border-style: dashed; }
+    .quick-actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 17px 0 12px; }
+    .quick-actions button { min-height: 42px; padding: 8px 13px; color: var(--accent-dark); border: 1px solid #a9d3ca; border-radius: 999px; background: white; font-weight: 800; }
+    .quick-actions button:hover, .quick-actions button:focus-visible { background: #eaf7f3; }
+    #kioskForm { display: grid; grid-template-columns: 1fr auto; gap: 10px; }
+    textarea { min-height: 94px; padding: 15px; resize: vertical; color: var(--ink); border: 1px solid #a9c6bd; border-radius: 15px; background: white; }
+    textarea:focus { outline: 3px solid rgba(17, 125, 115, .18); border-color: var(--accent); }
+    .send { min-width: 128px; color: white; border: 0; border-radius: 15px; background: var(--accent); font-weight: 900; }
+    .send:disabled { cursor: wait; opacity: .62; }
+    .error { margin: 10px 0 0; padding: 11px 13px; color: var(--danger); border: 1px solid #e9b7b0; border-radius: 11px; background: #fff0ee; }
+    .result-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+    .result-card { min-width: 0; padding: 18px; border: 1px solid var(--line); border-radius: 17px; background: white; }
+    .result-card h2 { margin: 0 0 13px; font-size: 1.2rem; }
+    .chips { display: flex; flex-wrap: wrap; gap: 7px; }
+    .chip { padding: 6px 9px; color: var(--accent-dark); border: 1px solid #b2d9d0; border-radius: 999px; background: #eaf7f3; font-size: .78rem; font-weight: 800; }
+    .empty { color: var(--muted); }
+    .cart-list { display: grid; gap: 9px; margin: 0; padding: 0; list-style: none; }
+    .cart-item { display: flex; align-items: start; justify-content: space-between; gap: 14px; padding-bottom: 9px; border-bottom: 1px solid #e0e6e2; }
+    .cart-item:last-child { padding-bottom: 0; border-bottom: 0; }
+    .cart-item small { display: block; color: var(--muted); }
+    .total { display: flex; justify-content: space-between; margin-top: 15px; padding-top: 13px; border-top: 2px solid var(--line); font-weight: 900; }
+    details { margin-top: 20px; border: 1px solid var(--line); border-radius: 17px; background: white; }
+    summary { padding: 15px 17px; color: var(--accent-dark); cursor: pointer; font-weight: 900; }
+    .menu-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; padding: 0 17px 17px; }
+    .menu-card { padding: 12px; border: 1px solid #d7e4df; border-radius: 12px; background: #f8fbf9; }
+    .menu-card strong, .menu-card small { display: block; }
+    .menu-card small { margin-top: 3px; color: var(--muted); }
+    .menu-note { margin: 0 17px 17px; padding: 10px 12px; color: #36564e; border-radius: 11px; background: var(--soft); }
+    .review-content { padding: 0 17px 17px; }
+    .review-static { display: grid; gap: 8px; margin-bottom: 15px; }
+    .review-static p { margin: 0; padding: 10px 12px; border-left: 4px solid var(--accent); background: #f5faf8; }
+    .review-static em { color: var(--accent-dark); font-style: normal; font-weight: 900; }
+    .review-form { display: grid; gap: 10px; padding: 15px; border: 1px solid #d2e0db; border-radius: 14px; background: #f8fbf9; }
+    .review-fields { display: grid; grid-template-columns: minmax(150px, .35fr) minmax(0, 1fr); gap: 9px; align-items: start; }
+    .review-form label { color: #36564e; font-size: .78rem; font-weight: 900; }
+    .review-form input, .review-form select, .review-form textarea { width: 100%; margin-top: 5px; padding: 10px; color: var(--ink); border: 1px solid #aec8c0; border-radius: 10px; background: white; }
+    .review-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .review-actions button { min-height: 40px; padding: 8px 12px; color: var(--accent-dark); border: 1px solid #acd0c7; border-radius: 10px; background: white; font-weight: 900; }
+    .review-actions .primary { color: white; border-color: var(--accent); background: var(--accent); }
+    .review-list { display: grid; gap: 8px; margin: 14px 0; }
+    .review-row { padding: 11px 12px; border: 1px solid #d7e4df; border-radius: 11px; background: white; }
+    .review-row strong, .review-row small { display: block; }
+    .review-row small { margin-top: 4px; color: var(--muted); }
+    .review-row-head, .review-row-controls { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .review-row-controls { justify-content: flex-start; margin-top: 10px; }
+    .review-row-controls select, .review-row-controls button { min-height: 36px; padding: 6px 9px; border: 1px solid #b4ccc5; border-radius: 9px; background: white; }
+    .review-status { margin: 8px 0 0; color: var(--muted); font-size: .82rem; }
+    .table-wrap { overflow-x: auto; border-top: 1px solid var(--line); }
+    table { width: 100%; min-width: 700px; border-collapse: collapse; }
+    th, td { padding: 12px 14px; text-align: left; border-bottom: 1px solid #e0e6e2; }
+    th { background: #edf4f0; }
+    tr:last-child td { border-bottom: 0; }
+    footer { padding-top: 20px; color: var(--muted); text-align: center; font-size: .84rem; }
+    @media (max-width: 720px) {
+      header { align-items: start; flex-direction: column; }
+      #kioskForm, .result-grid, .menu-grid, .review-fields { grid-template-columns: 1fr; }
+      .send { min-height: 52px; }
+      .message { max-width: 92%; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">RAG TEAM PROJECT · NATURAL-LANGUAGE KIOSK</p>
+        <h1>카페 주문·추천 인터페이스</h1>
+        <p class="subtitle">메뉴 문서를 먼저 검색한 뒤, 검색 근거 안에서 설명·추천·비교하고 검증된 옵션으로 장바구니를 갱신합니다.</p>
+      </div>
+      <span id="health" class="health">서버 확인 중</span>
+    </header>
+
+    <section class="panel" aria-labelledby="kiosk-title">
+      <div class="toolbar">
+        <div>
+          <strong id="kiosk-title">RAG 카페 Kiosk</strong>
+          <small>메뉴 문서 15개 · Claude 응답 · 장바구니 검증</small>
+        </div>
+        <button id="reset" class="secondary" type="button">주문 초기화</button>
+      </div>
+
+      <div class="content">
+        <details open>
+          <summary>전체 메뉴판 · 음료 11개 / 디저트 4개</summary>
+          <div class="menu-grid">
+            <div class="menu-card"><strong>아메리카노</strong><small>S 4,000 · M 4,500 · L 5,000원</small></div>
+            <div class="menu-card"><strong>카페라떼</strong><small>S 4,700 · M 5,200 · L 5,700원</small></div>
+            <div class="menu-card"><strong>카푸치노</strong><small>S 4,700 · M 5,200원</small></div>
+            <div class="menu-card"><strong>바닐라라떼</strong><small>S 5,200 · M 5,700 · L 6,200원</small></div>
+            <div class="menu-card"><strong>카라멜마키아토</strong><small>S 5,500 · M 6,000 · L 6,500원</small></div>
+            <div class="menu-card"><strong>콜드브루</strong><small>M 5,000 · L 5,500원</small></div>
+            <div class="menu-card"><strong>디카페인 아메리카노</strong><small>S 4,500 · M 5,000 · L 5,500원</small></div>
+            <div class="menu-card"><strong>말차라떼</strong><small>S 5,200 · M 5,700 · L 6,200원</small></div>
+            <div class="menu-card"><strong>유자차</strong><small>S 4,500 · M 5,000원</small></div>
+            <div class="menu-card"><strong>얼그레이 티</strong><small>S 4,200 · M 4,700원</small></div>
+            <div class="menu-card"><strong>초콜릿 라떼</strong><small>S 5,000 · M 5,500원</small></div>
+            <div class="menu-card"><strong>플레인 크루아상</strong><small>3,800원</small></div>
+            <div class="menu-card"><strong>초콜릿 케이크</strong><small>6,500원</small></div>
+            <div class="menu-card"><strong>뉴욕 치즈케이크</strong><small>6,200원</small></div>
+            <div class="menu-card"><strong>비건 오트 쿠키</strong><small>3,200원</small></div>
+          </div>
+          <p class="menu-note">옵션 추가금: 샷 추가 700원 · 오트밀크 변경 700원 · 바닐라 시럽 500원</p>
+        </details>
+
+        <div id="chatLog" class="chat-log" aria-live="polite">
+          <div class="message assistant"><span>Kiosk</span><p>위 메뉴판을 확인한 뒤 메뉴 정보, 추천, 비교 또는 주문을 자연어로 말씀해 주세요.</p></div>
+        </div>
+
+        <div class="quick-actions" aria-label="검증 예시">
+          <button type="button" data-example="달콤하지만 커피가 아닌 음료를 추천해줘.">취향 추천</button>
+          <button type="button" data-example="샌드위치와 어울리는 음료를 추천해줘.">식사 페어링</button>
+          <button type="button" data-example="아메리카노와 카푸치노의 맛, 가격, 카페인을 비교해줘.">복합 비교</button>
+          <button type="button" data-example="아아 두 잔 주문할게요.">2잔 주문</button>
+          <button type="button" data-example="1잔 취소해줘.">1잔 취소</button>
+          <button type="button" data-example="카페라떼 M 아이스에 샷 추가하고 오트밀크로 변경해서 주문할게요.">6,600원 옵션 주문</button>
+        </div>
+
+        <form id="kioskForm">
+          <label for="message" hidden>키오스크 요청</label>
+          <textarea id="message" maxlength="500" placeholder="예: 달콤한 논커피 음료를 추천해줘" required></textarea>
+          <button id="send" class="send" type="submit">보내기</button>
+        </form>
+        <p id="error" class="error" role="alert" hidden></p>
+
+        <div class="result-grid">
+          <section class="result-card">
+            <h2>검색 근거</h2>
+            <div id="retrieved" class="chips"><span class="empty">대화 후 검색 메뉴가 표시됩니다.</span></div>
+          </section>
+          <section class="result-card">
+            <h2>장바구니</h2>
+            <div id="cart"><p class="empty">담긴 메뉴가 없습니다.</p></div>
+          </section>
+        </div>
+
+        <details>
+          <summary>HTI(Hierarchical Task Inventory · 계층적 과업 목록)</summary>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>상위 과업</th><th>대표 과업</th><th>검증 예시</th></tr></thead>
+              <tbody>
+                <tr><td>탐색</td><td>설명·가격·사이즈·옵션</td><td>아메리카노 사이즈별 가격</td></tr>
+                <tr><td>추천</td><td>맛·카페인·식이 제한·식사 페어링</td><td>샌드위치와 어울리는 판매 음료 추천</td></tr>
+                <tr><td>비교</td><td>맛·가격·카페인</td><td>아메리카노와 카푸치노 비교</td></tr>
+                <tr><td>주문</td><td>추가·변경·삭제·합계</td><td>라떼 M 아이스, 바닐라 시럽</td></tr>
+                <tr><td>복구</td><td>재질문·없는 옵션·범위 밖</td><td>유자차에 샷 추가</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </details>
+
+        <details open>
+          <summary>팀 피드백·검토 로그 · 반영 완료 3명</summary>
+          <div class="review-content">
+            <div class="review-static">
+              <p><strong>서영님</strong> · 판매하지 않는 식사 메뉴를 검색 실패로 끝내지 않고 실제 음료의 페어링 조건으로 처리 <em>반영 완료</em></p>
+              <p><strong>서진님</strong> · 전체 메뉴판, 추천 이유·가격, 2잔 주문 후 1잔 취소 및 총액 회귀 검증 <em>반영 완료</em></p>
+              <p><strong>지희님</strong> · “네/둘 다” 문맥 유지, 옵션 포함 6,600원 서버 계산, 주문 확정 처리 <em>반영 완료</em></p>
+            </div>
+            <div id="reviewList" class="review-list" aria-live="polite"><p class="empty">추가 입력 로그가 없습니다.</p></div>
+            <form id="reviewForm" class="review-form">
+              <strong>새 피드백 입력 · 이름과 내용만 남기기</strong>
+              <div class="review-fields">
+                <label>이름<input id="reviewName" maxlength="30" placeholder="예: 민수님" required></label>
+                <label>피드백 내용<textarea id="reviewIssue" rows="4" maxlength="800" placeholder="불편했던 상황이나 개선 의견을 자유롭게 적어 주세요." required></textarea></label>
+              </div>
+              <div class="review-actions">
+                <button class="primary" type="submit">검토 로그에 추가</button>
+                <button id="reviewJson" type="button">JSON 저장</button>
+                <button id="reviewCsv" type="button">CSV 저장</button>
+                <button id="reviewMd" type="button">Markdown 저장</button>
+                <button id="reviewImport" type="button">JSON 가져오기</button>
+                <input id="reviewFile" type="file" accept="application/json,.json" hidden>
+              </div>
+              <p id="reviewStatus" class="review-status" role="status">브라우저에 저장한 로그를 다음 코드 업데이트의 입력 자료로 사용할 수 있습니다.</p>
+            </form>
+          </div>
+        </details>
+      </div>
+    </section>
+    <footer>AI응용 팀과제 · 구범용 · API 키는 브라우저 코드에 포함하지 않습니다.</footer>
+  </main>
+
+  <script>
+    (() => {
+      const form = document.getElementById('kioskForm');
+      const input = document.getElementById('message');
+      const send = document.getElementById('send');
+      const reset = document.getElementById('reset');
+      const log = document.getElementById('chatLog');
+      const retrievedBox = document.getElementById('retrieved');
+      const cartBox = document.getElementById('cart');
+      const errorBox = document.getElementById('error');
+      const health = document.getElementById('health');
+      const money = new Intl.NumberFormat('ko-KR');
+      let messages = [];
+      let cart = [];
+      const reviewKey = 'rag-cafe-kiosk-feedback:v2';
+      const reviewLabels = { pending: '검토 대기', in_progress: '반영 중', applied: '반영 완료', reverified: '재검증 완료' };
+      const reviewList = document.getElementById('reviewList');
+      const reviewForm = document.getElementById('reviewForm');
+      const reviewStatus = document.getElementById('reviewStatus');
+      let reviewRows = [];
+
+      try {
+        const stored = JSON.parse(localStorage.getItem(reviewKey) || '[]');
+        reviewRows = Array.isArray(stored) ? stored : [];
+      } catch { reviewRows = []; }
+
+      function reviewId() {
+        return globalThis.crypto?.randomUUID?.() || `feedback-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+
+      function normalizeReview(row) {
+        const status = reviewLabels[row?.status] ? row.status : 'pending';
+        return {
+          id: String(row?.id || reviewId()),
+          name: String(row?.name || '이름 없음').slice(0, 30),
+          category: String(row?.category || '기타').slice(0, 30),
+          status,
+          issue: String(row?.issue || '').slice(0, 800),
+          example: String(row?.example || '').slice(0, 800),
+          expected: String(row?.expected || '').slice(0, 800),
+          createdAt: String(row?.createdAt || new Date().toISOString()),
+          updatedAt: String(row?.updatedAt || row?.createdAt || new Date().toISOString()),
+          history: Array.isArray(row?.history) ? row.history.slice(-30) : [{ status, at: new Date().toISOString() }],
+        };
+      }
+
+      reviewRows = reviewRows.map(normalizeReview);
+
+      function saveReviews() {
+        localStorage.setItem(reviewKey, JSON.stringify(reviewRows));
+      }
+
+      function renderReviews() {
+        reviewList.replaceChildren();
+        if (!reviewRows.length) {
+          const empty = document.createElement('p');
+          empty.className = 'empty';
+          empty.textContent = '추가 입력 로그가 없습니다.';
+          reviewList.append(empty);
+          return;
+        }
+        reviewRows.slice().reverse().forEach((row) => {
+          const item = document.createElement('article');
+          item.className = 'review-row';
+          const head = document.createElement('div');
+          head.className = 'review-row-head';
+          const name = document.createElement('strong');
+          name.textContent = `${row.name} · ${row.category}`;
+          const state = document.createElement('small');
+          state.textContent = reviewLabels[row.status];
+          head.append(name, state);
+          const issue = document.createElement('p');
+          issue.textContent = row.issue;
+          const meta = document.createElement('small');
+          meta.textContent = `저장 ${new Date(row.createdAt).toLocaleString('ko-KR')} · 상태 변경 ${row.history.length}회`;
+          const controls = document.createElement('div');
+          controls.className = 'review-row-controls';
+          const select = document.createElement('select');
+          Object.entries(reviewLabels).forEach(([value, label]) => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = label;
+            option.selected = value === row.status;
+            select.append(option);
+          });
+          const update = document.createElement('button');
+          update.type = 'button';
+          update.textContent = '상태 저장';
+          update.addEventListener('click', () => {
+            const now = new Date().toISOString();
+            row.status = select.value;
+            row.updatedAt = now;
+            row.history.push({ status: row.status, at: now });
+            saveReviews();
+            renderReviews();
+            reviewStatus.textContent = `${row.name} 피드백 상태를 '${reviewLabels[row.status]}'로 저장했습니다.`;
+          });
+          controls.append(select, update);
+          item.append(head, issue, meta, controls);
+          reviewList.append(item);
+        });
+      }
+
+      function reviewPayload() {
+        return { schemaVersion: 2, exportedAt: new Date().toISOString(), workflow: Object.keys(reviewLabels), baselineReviewers: ['서영님', '서진님', '지희님'], feedback: reviewRows };
+      }
+
+      function downloadReview(name, content, type) {
+        const anchor = document.createElement('a');
+        anchor.href = URL.createObjectURL(new Blob([content], { type }));
+        anchor.download = name;
+        anchor.click();
+        setTimeout(() => URL.revokeObjectURL(anchor.href), 1000);
+      }
+
+      function reviewStamp() {
+        return new Date().toISOString().replace(/[:.]/g, '-');
+      }
+
+      function addMessage(role, content, meta = '') {
+        const item = document.createElement('div');
+        item.className = 'message ' + role;
+        const label = document.createElement('span');
+        label.textContent = role === 'user' ? '나' : (meta || 'Kiosk');
+        const text = document.createElement('p');
+        text.textContent = content;
+        item.append(label, text);
+        log.append(item);
+        log.scrollTop = log.scrollHeight;
+        return item;
+      }
+
+      function renderRetrieved(rows) {
+        retrievedBox.replaceChildren();
+        if (!Array.isArray(rows) || !rows.length) {
+          const empty = document.createElement('span');
+          empty.className = 'empty';
+          empty.textContent = '직접 일치하는 메뉴가 없습니다.';
+          retrievedBox.append(empty);
+          return;
+        }
+        rows.forEach((row) => {
+          const chip = document.createElement('span');
+          chip.className = 'chip';
+          const price = row.price_label ? ' · ' + row.price_label : '';
+          chip.textContent = row.name + price + ' · ' + Math.round(Number(row.score || 0) * 100) + '%';
+          retrievedBox.append(chip);
+        });
+      }
+
+      function renderCart(total = 0) {
+        cartBox.replaceChildren();
+        if (!cart.length) {
+          const empty = document.createElement('p');
+          empty.className = 'empty';
+          empty.textContent = '담긴 메뉴가 없습니다.';
+          cartBox.append(empty);
+          return;
+        }
+        const list = document.createElement('ul');
+        list.className = 'cart-list';
+        cart.forEach((row) => {
+          const item = document.createElement('li');
+          item.className = 'cart-item';
+          const info = document.createElement('div');
+          const title = document.createElement('strong');
+          title.textContent = row.name + ' × ' + row.quantity;
+          const detail = document.createElement('small');
+          const optionText = Array.isArray(row.options) && row.options.length ? ' · ' + row.options.join(', ') : '';
+          detail.textContent = row.size + ' · ' + row.temperature + optionText;
+          info.append(title, detail);
+          const price = document.createElement('strong');
+          price.textContent = money.format(row.unit_price * row.quantity) + '원';
+          item.append(info, price);
+          list.append(item);
+        });
+        const totalRow = document.createElement('div');
+        totalRow.className = 'total';
+        const totalLabel = document.createElement('span');
+        totalLabel.textContent = '합계';
+        const totalValue = document.createElement('span');
+        totalValue.textContent = money.format(total) + '원';
+        totalRow.append(totalLabel, totalValue);
+        cartBox.append(list, totalRow);
+      }
+
+      async function sendMessage(message) {
+        addMessage('user', message);
+        const pending = addMessage('assistant', '메뉴 문서를 검색하고 요청을 확인하고 있습니다.', '처리 중');
+        send.disabled = true;
+        send.textContent = '처리 중…';
+        errorBox.hidden = true;
+
+        try {
+          const response = await fetch('/api/rag-kiosk', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message, messages: messages.slice(-8), cart }),
+          });
+          const data = await response.json().catch(() => null);
+          if (!response.ok || !data) throw new Error(data?.error || '키오스크 요청을 완료하지 못했습니다.');
+
+          pending.remove();
+          addMessage('assistant', data.answer || '요청을 확인했습니다.', data.intent ? '의도 · ' + data.intent : 'Kiosk');
+          messages.push(
+            { role: 'user', content: message },
+            { role: 'assistant', content: data.answer || '' },
+          );
+          messages = messages.slice(-8);
+          cart = Array.isArray(data.cart) ? data.cart : cart;
+          renderRetrieved(data.retrieved || []);
+          renderCart(Number(data.cart_total || 0));
+        } catch (error) {
+          pending.remove();
+          errorBox.textContent = error.message || '서버 연결을 확인해 주세요.';
+          errorBox.hidden = false;
+        } finally {
+          send.disabled = false;
+          send.textContent = '보내기';
+          input.focus();
+        }
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+        input.value = '';
+        sendMessage(message);
+      });
+
+      input.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) {
+          event.preventDefault();
+          form.requestSubmit();
+        }
+      });
+
+      document.querySelectorAll('[data-example]').forEach((button) => {
+        button.addEventListener('click', () => {
+          input.value = button.dataset.example;
+          form.requestSubmit();
+        });
+      });
+
+      reset.addEventListener('click', () => {
+        messages = [];
+        cart = [];
+        log.innerHTML = '<div class="message assistant"><span>Kiosk</span><p>새 주문을 시작했습니다. 메뉴 정보, 추천, 비교 또는 주문을 말씀해 주세요.</p></div>';
+        retrievedBox.innerHTML = '<span class="empty">대화 후 검색 메뉴가 표시됩니다.</span>';
+        renderCart(0);
+        errorBox.hidden = true;
+        input.focus();
+      });
+
+      renderReviews();
+      reviewForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const now = new Date().toISOString();
+        const name = document.getElementById('reviewName').value.trim();
+        reviewRows.push(normalizeReview({
+          id: reviewId(), name, category: '사용자 피드백', status: 'pending',
+          issue: document.getElementById('reviewIssue').value.trim(), example: '', expected: '',
+          createdAt: now, updatedAt: now, history: [{ status: 'pending', at: now }],
+        }));
+        saveReviews();
+        renderReviews();
+        reviewForm.reset();
+        reviewStatus.textContent = `${name} 피드백을 이 브라우저의 검토 로그에 저장했습니다.`;
+      });
+
+      document.getElementById('reviewJson').addEventListener('click', () => {
+        downloadReview(`rag_kiosk_feedback_${reviewStamp()}.json`, JSON.stringify(reviewPayload(), null, 2), 'application/json;charset=utf-8');
+      });
+      document.getElementById('reviewCsv').addEventListener('click', () => {
+        const quote = (value) => `"${String(value ?? '').replaceAll('"', '""')}"`;
+        const header = ['feedback_id', 'name', 'category', 'status', 'content', 'created_at', 'updated_at'];
+        const rows = reviewRows.map((row) => [row.id, row.name, row.category, row.status, row.issue, row.createdAt, row.updatedAt].map(quote).join(','));
+        downloadReview(`rag_kiosk_feedback_${reviewStamp()}.csv`, '\ufeff' + [header.join(','), ...rows].join('\n'), 'text/csv;charset=utf-8');
+      });
+      document.getElementById('reviewMd').addEventListener('click', () => {
+        const lines = ['# RAG 카페 Kiosk 피드백 로그', '', `- 내보낸 시각: ${new Date().toLocaleString('ko-KR')}`, ''];
+        reviewRows.forEach((row, index) => lines.push(`## ${index + 1}. ${row.name} · ${reviewLabels[row.status]}`, '', row.issue, ''));
+        downloadReview(`rag_kiosk_feedback_${reviewStamp()}.md`, lines.join('\n'), 'text/markdown;charset=utf-8');
+      });
+      const reviewFile = document.getElementById('reviewFile');
+      document.getElementById('reviewImport').addEventListener('click', () => reviewFile.click());
+      reviewFile.addEventListener('change', async () => {
+        const file = reviewFile.files?.[0];
+        if (!file) return;
+        try {
+          const payload = JSON.parse(await file.text());
+          const imported = Array.isArray(payload) ? payload : payload.feedback;
+          if (!Array.isArray(imported)) throw new Error('feedback 배열이 없습니다.');
+          const merged = new Map(reviewRows.map((row) => [row.id, row]));
+          imported.map(normalizeReview).forEach((row) => merged.set(row.id, row));
+          reviewRows = [...merged.values()];
+          saveReviews();
+          renderReviews();
+          reviewStatus.textContent = `JSON 로그 ${imported.length}건을 병합했습니다.`;
+        } catch (error) {
+          reviewStatus.textContent = `가져오기 실패: ${error.message}`;
+        } finally {
+          reviewFile.value = '';
+        }
+      });
+
+      fetch('/api/health', { cache: 'no-store' })
+        .then((response) => response.json())
+        .then((data) => {
+          if (!data.ok) throw new Error('not ready');
+          health.textContent = data.claude_configured ? 'Claude 서버 연결' : 'API 키 설정 필요';
+          if (data.claude_configured) health.classList.add('online');
+        })
+        .catch(() => { health.textContent = '서버 연결 확인 필요'; });
+    })();
+  </script>
+</body>
+</html>

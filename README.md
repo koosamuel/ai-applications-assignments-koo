@@ -2,6 +2,14 @@
 
 StepUp English 회화 코치, 실습 7·8 OpenWeatherMap, 실습 10 웹 리포트, RAG 카페 Kiosk를 함께 실행하는 사이트다. 브라우저는 같은 출처의 Sites Worker API만 호출한다.
 
+## 바로가기
+
+- [배포 사이트](https://ai-applications-assignments-koo.koosamuel1.chatgpt.site)
+- [RAG 카페 Kiosk 실행](https://ai-applications-assignments-koo.koosamuel1.chatgpt.site/?v=22#ragkiosk/results)
+- [`rag-kiosk/`](./rag-kiosk): 키오스크 화면, Worker API, 회귀 테스트와 제출 노트북을 모은 독립 소스
+
+키오스크 화면은 배포 도메인의 `/api/rag-kiosk`와 같은 출처로 연결된다. Claude API 키는 GitHub나 브라우저 코드에 넣지 않고 Sites Worker의 서버 환경변수로만 관리한다. GitHub Pages는 정적 파일만 제공하므로 이 프로젝트의 운영 서버로 사용하지 않는다.
+
 현재 화면은 대화를 첫 과업으로 배치하고, 자동 높이 입력창·Enter 전송·Shift+Enter 줄바꿈·600자 카운터·시나리오별 완성 예문·CEFR 진행 표시를 제공한다. `A2→B1 여행`, `C1 사회 이슈`, `명령어 테스트` 중 하나를 선택해 세션을 열 수 있으며, 여행 시나리오는 여섯 번째 답변부터 B1형 예문으로 전환한다. 복사한 도움 예문도 영어 답변 수에는 포함하지만 `assisted=true`로 구분하고 CEFR 근거에는 독립 답변의 절반 가중치를 적용한다. `전체 자동 테스트`는 세 세션을 한 번에 실행하고 n=5, 10, 15, 20 평가·응답시간·대체 응답·명령어 결과를 기록한 뒤 최종 결과문을 작성한다. 결과는 개인정보 없이 Markdown 요약과 JSON 전체 기록으로 내려받을 수 있다.
 
 `실습 7 · 날씨` 탭에서는 도시와 기간을 자연어로 입력한다. Claude가 `get_current_weather` 또는 `get_n_day_weather_forecast`를 선택하고, Worker가 OpenWeatherMap의 지오코딩·현재 날씨·5일/3시간 예보 API를 호출한 뒤 결과를 다시 Claude에 전달한다.
@@ -19,6 +27,7 @@ StepUp English 회화 코치, 실습 7·8 OpenWeatherMap, 실습 10 웹 리포�
 
 - `index.html`: 생성된 팀과제 화면
 - `worker-src/index.js`: 정적 파일 제공, 영어 코치·날씨·웹 리포트·RAG Kiosk API
+- `rag-kiosk/`: RAG 카페 Kiosk만 분리한 웹·Worker·테스트·노트북 소스
 - `db/schema.ts`, `drizzle/`: D1 사용량·비용·속도 제한 스키마와 마이그레이션
 - `scripts/build-worker.mjs`: HTML·매니페스트·서비스워커를 Worker 모듈에 포함
 - `.openai/hosting.json`: Sites 프로젝트와 D1 바인딩 설정

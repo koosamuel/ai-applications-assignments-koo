@@ -1,0 +1,11 @@
+name = "rag-cafe-kiosk-koobeomyong"
+main = "src/worker.js"
+compatibility_date = "2026-10-12"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+run_worker_first = ["/api/*"]
+
+[vars]
+ANTHROPIC_MODEL = "claude-haiku-5-5"
