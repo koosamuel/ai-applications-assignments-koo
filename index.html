@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>StepUp English 팀과제 · 1조</title>
-  <meta name="description" content="1조의 CEFR 적응형 영어 회화 코치 팀과제 구현·실행 결과와 요구사항">
+  <title>AI응용 인터랙티브 실습 · 1조</title>
+  <meta name="description" content="1조의 StepUp English 팀과제와 Claude 도구 사용 기반 OpenWeatherMap 실습 구현">
   <meta name="supabase-url" content="">
   <meta name="supabase-publishable-key" content="">
-  <meta property="og:title" content="StepUp English 팀과제 · 1조">
-  <meta property="og:description" content="CEFR 잠정 추정, 적응형 질문, 핵심 교정과 세션 보고서를 제공하는 1조의 영어 회화 코치입니다.">
+  <meta property="og:title" content="AI응용 인터랙티브 실습 · 1조">
+  <meta property="og:description" content="StepUp English와 Claude Function Calling 기반 날씨 도우미를 한 화면에서 실행합니다.">
   <link rel="manifest" href="./manifest.webmanifest">
   <style>
     :root { --ink:#16211d; --muted:#5c6b64; --paper:#f6f5ef; --surface:#fffef9; --line:#d9ddd5; --accent:#0f766e; --accent-soft:#dff3ef; --gold:#b7791f; --shadow:0 18px 50px rgba(31,45,38,.10); }
@@ -241,18 +241,55 @@
     .live-update { margin-top:24px; padding:15px 18px; border:1px solid #b9dfd6; border-radius:13px; background:#edf9f5; }
     .live-update p { margin:4px 0; }
     .live-update time { color:var(--muted); font-size:.78rem; }
+    .weather-app { display:grid; gap:18px; }
+    .weather-form { padding:clamp(18px,3vw,28px); border:1px solid #bfd8d1; border-radius:20px; background:linear-gradient(145deg,#f4fbf8,#eef6f3); }
+    .weather-field { display:grid; gap:7px; min-width:0; color:#30453d; font-size:.83rem; font-weight:800; }
+    .weather-question-field label { font-size:1rem; }
+    .weather-field textarea,.weather-field select { width:100%; color:var(--ink); border:1px solid #abc8c0; border-radius:12px; background:white; font:inherit; outline:none; }
+    .weather-field textarea { min-height:82px; padding:13px 15px; resize:vertical; line-height:1.55; }
+    .weather-field select { min-height:48px; padding:0 38px 0 13px; }
+    .weather-field textarea:focus,.weather-field select:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(15,118,110,.14); }
+    .weather-field small { color:var(--muted); font-weight:600; text-align:right; }
+    .weather-controls { display:grid; grid-template-columns:minmax(130px,1fr) minmax(130px,1fr) minmax(150px,.8fr); gap:12px; align-items:end; margin-top:16px; }
+    .weather-submit { min-height:48px; padding:0 20px; color:white; border:0; border-radius:12px; background:var(--accent); font-weight:850; cursor:pointer; box-shadow:0 7px 18px rgba(15,118,110,.22); }
+    .weather-submit:hover { background:#0b655f; }
+    .weather-submit:disabled { cursor:wait; opacity:.62; }
+    .weather-examples { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin-top:15px; }
+    .weather-examples > span { color:var(--muted); font-size:.76rem; font-weight:850; }
+    .weather-examples button { padding:7px 11px; color:#145f58; border:1px solid #b6d7cf; border-radius:999px; background:white; font-size:.78rem; font-weight:750; cursor:pointer; }
+    .weather-examples button:hover { border-color:var(--accent); background:#e5f5f1; }
+    .weather-result { padding:clamp(18px,3vw,26px); border:1px solid #c7d8d2; border-radius:20px; background:white; box-shadow:0 12px 34px rgba(31,45,38,.07); }
+    .weather-result.loading { opacity:.72; }
+    .weather-result-head { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; }
+    .weather-result-head h3 { margin:3px 0 7px; font-size:1.42rem; }
+    .weather-result-head p { max-width:760px; margin:0; color:#41534c; }
+    .weather-kicker { color:var(--accent); font-size:.72rem; font-weight:900; letter-spacing:.1em; text-transform:uppercase; }
+    .weather-tool-badge { flex:0 0 auto; max-width:280px; padding:6px 10px; overflow-wrap:anywhere; color:#155f58; border:1px solid #b7d8d0; border-radius:999px; background:#eaf7f3; font:700 .72rem/1.35 ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .weather-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-top:20px; }
+    .weather-cards article { min-height:132px; padding:16px; border:1px solid var(--line); border-radius:15px; background:linear-gradient(155deg,#fcfdf9,#f0f5f2); }
+    .weather-cards article span,.weather-cards article strong,.weather-cards article small { display:block; }
+    .weather-cards article span { color:var(--accent); font-size:.76rem; font-weight:850; }
+    .weather-cards article strong { margin:6px 0 3px; font-size:1.24rem; letter-spacing:-.025em; }
+    .weather-cards article small { color:var(--muted); }
+    .weather-card-detail { margin-top:8px; color:#3d5149; font-size:.82rem; }
+    .weather-meta { margin:15px 0 0; color:var(--muted); font-size:.78rem; }
+    .weather-error { padding:14px 16px; color:#8a2f2f; border:1px solid #e7b9b9; border-radius:13px; background:#fff1f1; }
     footer { padding:24px 4px 0; color:var(--muted); font-size:.84rem; text-align:center; }
     @media (max-width:900px) { .steps{grid-template-columns:repeat(2,minmax(0,1fr))} }
-    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} .coach-cefr-ladder{grid-template-columns:repeat(3,minmax(0,1fr))} .coach-cefr-ladder > span:nth-child(3)::after{display:none} .coach-cefr-stats{grid-template-columns:1fr} }
-    @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-scenarios{align-items:flex-start;flex-direction:column} .coach-scenario-actions{justify-content:flex-start} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-answer-frame{grid-template-columns:1fr} .coach-answer-frame button{width:100%} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-quick{gap:7px} .coach-quick button{flex:1 0 auto} .coach-auto-head{align-items:flex-start;flex-direction:column} .coach-auto-actions,.coach-auto-downloads{width:100%} .coach-auto-actions button,.coach-auto-downloads button{flex:1} .coach-auto-status{flex-direction:column;gap:2px} }
+    @media (max-width:760px) { .shell{width:min(100% - 20px,1180px);padding-top:24px} header{display:block} .byline{margin-top:10px;text-align:left} [data-panel]{padding:22px 16px} .section-head{display:block} .status{display:inline-block;margin-top:12px} .assignment-tabs{display:flex;overflow-x:auto} .assignment-tabs button{flex:1 0 160px;min-height:56px} .data-intro{display:block} .data-intro p{margin-top:8px} .prompt-section-head{display:block} .prompt-scope{display:inline-block;margin-top:8px} .prompt-grid{grid-template-columns:1fr} .prompt-shared{display:block} .prompt-shared p{margin-top:4px} .metrics{grid-template-columns:1fr} .cluster-layout{grid-template-columns:1fr} .bubble{max-width:95%} .coach-topbar{align-items:stretch;flex-direction:column} .coach-level-state{justify-items:start;width:100%} .coach-cefr-ladder{grid-template-columns:repeat(3,minmax(0,1fr))} .coach-cefr-ladder > span:nth-child(3)::after{display:none} .coach-cefr-stats{grid-template-columns:1fr} .weather-controls{grid-template-columns:1fr 1fr} .weather-submit{grid-column:1/-1} .weather-result-head{display:block} .weather-tool-badge{display:inline-block;margin-top:12px} }
+    @media (max-width:560px) { .steps{grid-template-columns:1fr} .coach-scenarios{align-items:flex-start;flex-direction:column} .coach-scenario-actions{justify-content:flex-start} .coach-log{min-height:220px;padding:14px} .coach-log .bubble{max-width:94%;padding:13px 14px} .coach-answer-frame{grid-template-columns:1fr} .coach-answer-frame button{width:100%} .coach-input-head{align-items:flex-start;flex-direction:column;gap:4px} .coach-input-row{grid-template-columns:1fr} .coach-form button{width:100%;min-height:48px} .coach-quick{gap:7px} .coach-quick button{flex:1 0 auto} .coach-auto-head{align-items:flex-start;flex-direction:column} .coach-auto-actions,.coach-auto-downloads{width:100%} .coach-auto-actions button,.coach-auto-downloads button{flex:1} .coach-auto-status{flex-direction:column;gap:2px} .weather-controls{grid-template-columns:1fr} .weather-submit{grid-column:auto} .weather-cards{grid-template-columns:1fr} }
     @media (prefers-reduced-motion:reduce) { html{scroll-behavior:auto} *,*::before,*::after{scroll-behavior:auto!important;transition-duration:.01ms!important;animation-duration:.01ms!important;animation-iteration-count:1!important} }
     @media print { body{background:white} .shell{width:100%;padding:0} .tabs,.assignment-tabs,.dataset-tabs{display:none} [data-panel]{display:block!important;break-before:page;box-shadow:none;border:0;padding:20px 0} [data-panel]:first-of-type{break-before:auto} .assignment-view,.dataset-panel{display:block!important} .prompt-details:not([open]) > :not(summary){display:block!important} .code-details{display:none} footer{display:none} }
   </style>
 </head>
 <body>
   <main class="shell">
-    <header><div class="brand"><p>AI응용 · 팀과제 포트폴리오</p><h1>1조</h1></div><div class="byline">팀과제 2 · StepUp English<br>팀 선정 Part 1 프롬프트 구현본</div></header>
+    <header><div class="brand"><p>AI응용 · 인터랙티브 포트폴리오</p><h1>1조</h1></div><div class="byline">팀과제 2 · StepUp English<br>실습 7 · OpenWeatherMap Function Calling</div></header>
     <div class="sync-strip" role="status" aria-live="polite"><span class="sync-dot" id="syncDot"></span><span id="syncStatus">정적 스냅샷</span><time id="syncUpdated"></time></div>
+    <nav class="tabs" role="tablist" aria-label="과제 선택">
+      <button id="tab-team" role="tab" aria-controls="panel-team" aria-selected="true" tabindex="0" data-tab="team">팀과제 · StepUp</button>
+      <button id="tab-weather" role="tab" aria-controls="panel-weather" aria-selected="false" tabindex="-1" data-tab="weather">실습 7 · 날씨</button>
+    </nav>
     <section id="panel-team" aria-labelledby="team-title" data-panel="team">
     <div class="section-head"><div><p class="eyebrow">팀과제 · CEFR Adaptive Coach</p><h2 id="team-title">StepUp English 회화 챗봇</h2></div><span class="status caution">실제 팀 검증 대기</span></div>
     <p class="lead">학습자 발화를 바탕으로 CEFR 수준을 주기적으로 추정하고, 수준 변화 알림·핵심 교정·다음 질문을 제공하는 적응형 영어 회화 코치입니다.</p>
@@ -380,11 +417,11 @@
 - 첫 5개 답변은 지원 없는 진단 기회를 우선하고, 이후에는 진단과 학습 연습을 번갈아 제공한다.
 - 단답 한 번이나 도움 요청 한 번만으로 난이도나 수준을 낮추지 않는다.
 - 웹 구현에서는 테스트 시나리오를 선택하면 현재 질문과 단계에 맞는 완성 예문을 별도 답변 도움 영역에 제공한다. 여행 변화 테스트는 1~5번째 답변 구간에 A2형 예문, 6번째 답변부터 B1형 예문을 제공하고, 사회 이슈 유지 테스트는 C1형 예문을 유지한다.
-- 제공된 완성 예문을 그대로 복사해 보낸 영어 메시지도 n과 CEFR 평가 근거에 포함하며, 예문에는 합성·일반 내용만 사용한다.
+- 제공된 완성 예문을 그대로 복사해 보낸 영어 메시지도 n에 포함하되 `assisted=true`로 별도 기록하고, CEFR 평가 근거에는 독립 답변의 절반 가중치로 반영한다. 예문에는 합성·일반 내용만 사용한다.
 
 3. 답변 수와 CEFR 평가
 - n은 학생이 직접 작성한 영어 답변 메시지 수다. 한 메시지의 문장 수와 관계없이 하나로 센다.
-- 명령, 설정 변경, 한국어 도움 요청, 인용·번역 자료, 교정문을 그대로 복사한 메시지는 n에 넣지 않는다. 다만 답변 도움 영역의 완성 예문을 복사해 보낸 영어 메시지는 웹 테스트 정책에 따라 n에 넣는다.
+- 명령, 설정 변경, 한국어 도움 요청, 인용·번역 자료, 교정문을 그대로 복사한 메시지는 n에 넣지 않는다. 다만 답변 도움 영역의 완성 예문을 복사해 보낸 영어 메시지는 웹 테스트 정책에 따라 n에 넣고 `assisted=true`로 구분한다.
 - 첫 평가는 n=5, 이후 평가는 n=10, 15, 20…에서 한다.
 - 지원받은 요소는 해당 요소만 증거에서 제외하고 학생이 스스로 만든 내용은 증거로 인정한다.
 - 과제 수행과 의미 전달, 어휘, 문법, 연결과 논리, 상호작용과 표현 조절을 함께 본다.
@@ -407,7 +444,7 @@
 - 원문이 맞고 자연스러우면 인정하며 억지 교정을 만들지 않는다.
 - 모호한 표현은 의도를 추측해 오류로 단정하지 않는다.
 - 피드백 뒤에는 새 내용으로 연습할 영어 과제 하나만 제시한다.
-- 교정문을 그대로 복사한 답은 독립 능력의 증거로 삼지 않는다.
+- 교정문을 그대로 복사한 답은 독립 능력의 증거로 삼지 않는다. 도움 예문을 복사한 답은 연습 참여로 집계하지만 수준 판정에서는 0.5 가중치를 적용한다.
 
 5. 응답 구성
 - 일반 응답은 짧은 반응, 필요한 피드백 또는 수행 확인, 핵심 질문 하나, 진행 표시로 구성한다.
@@ -429,8 +466,61 @@
 
     </section>
 
-    <aside class="live-update" data-live="team" hidden><strong>Realtime 업데이트</strong><p></p><time></time></aside></section>
-    <footer>AI응용 1조 팀과제 · Sites Worker와 D1 기반 AI 서버를 사용합니다.</footer>
+    <aside class="live-update" data-live="team" hidden><strong>Realtime 업데이트</strong><p></p><time></time></aside></section><section id="panel-weather" aria-labelledby="weather-title" data-panel="weather" hidden>
+    <div class="section-head"><div><p class="eyebrow">실습 7 · Function Calling</p><h2 id="weather-title">OpenWeatherMap 날씨 도우미</h2></div><span class="status success">HTML 구현</span></div>
+    <p class="lead">도시와 기간을 자연어로 질문하면 Claude가 현재 날씨 또는 N일 예보 도구를 선택하고, OpenWeatherMap의 실제 데이터를 이해하기 쉬운 한국어로 정리합니다.</p>
+
+    <nav class="assignment-tabs" role="tablist" aria-label="과제 세부 보기">
+      <button role="tab" id="weather-tab-results" aria-controls="weather-panel-results" aria-selected="true" tabindex="0" data-assignment="weather" data-assignment-tab="results">구현·실행 결과 <small>직접 날씨 조회</small></button>
+      <button role="tab" id="weather-tab-requirements" aria-controls="weather-panel-requirements" aria-selected="false" tabindex="-1" data-assignment="weather" data-assignment-tab="requirements">과제 요구사항·입력 데이터 <small>도구 호출 · 입력 데이터</small></button>
+    </nav>
+    <section class="assignment-view" role="tabpanel" id="weather-panel-results" aria-labelledby="weather-tab-results" data-assignment="weather" data-assignment-panel="results">
+
+      <div class="weather-app">
+        <form id="weatherForm" class="weather-form">
+          <div class="weather-field weather-question-field">
+            <label for="weatherQuestion">날씨 질문</label>
+            <textarea id="weatherQuestion" name="message" rows="2" maxlength="500" placeholder="예: 부산의 앞으로 3일 날씨를 알려줘." required>서울의 앞으로 3일 날씨를 알려줘.</textarea>
+            <small><kbd>Enter</kbd> 조회 · <kbd>Shift</kbd>+<kbd>Enter</kbd> 줄바꿈</small>
+          </div>
+          <div class="weather-controls">
+            <label class="weather-field" for="weatherDays"><span>기본 예측 일수</span><select id="weatherDays" name="forecast_days"><option value="1">1일</option><option value="2">2일</option><option value="3" selected>3일</option><option value="4">4일</option><option value="5">5일</option></select></label>
+            <label class="weather-field" for="weatherUnit"><span>온도 단위</span><select id="weatherUnit" name="unit"><option value="metric" selected>섭씨 °C</option><option value="imperial">화씨 °F</option></select></label>
+            <button id="weatherSubmit" class="weather-submit" type="submit">날씨 확인</button>
+          </div>
+          <div class="weather-examples" aria-label="예시 질문"><span>빠른 질문</span><button type="button" data-weather-example="서울 지금 날씨 알려줘">서울 현재</button><button type="button" data-weather-example="부산의 앞으로 3일 날씨를 알려줘">부산 3일</button><button type="button" data-weather-example="제주의 5일 예보와 비 올 가능성을 알려줘">제주 5일</button></div>
+        </form>
+        <section id="weatherResult" class="weather-result" aria-labelledby="weatherResultTitle" aria-live="polite">
+          <div class="weather-result-head">
+            <div><span id="weatherResultMode" class="weather-kicker">실행 예시</span><h3 id="weatherResultTitle">서울 · 3일 예보</h3><p id="weatherAnswer">질문을 보내면 Claude가 현재 날씨와 N일 예보 중 적절한 도구를 선택하고, OpenWeatherMap 결과를 바탕으로 답변합니다.</p></div>
+            <span id="weatherTool" class="weather-tool-badge">get_n_day_weather_forecast</span>
+          </div>
+          <div id="weatherCards" class="weather-cards">
+            <article><span>1일차</span><strong>데이터 대기</strong><small>실제 조회 후 표시</small></article>
+            <article><span>2일차</span><strong>데이터 대기</strong><small>실제 조회 후 표시</small></article>
+            <article><span>3일차</span><strong>데이터 대기</strong><small>실제 조회 후 표시</small></article>
+          </div>
+          <p id="weatherMeta" class="weather-meta">현재는 화면 예시입니다. 배포 환경에서 서버 Secret이 설정되면 실제 데이터를 조회합니다.</p>
+        </section>
+        <div id="weatherError" class="weather-error" role="alert" hidden></div>
+      </div>
+      <div class="metrics"><div class="metric"><span>날씨 도구</span><strong>2개</strong><small>현재 · N일 예보</small></div><div class="metric"><span>예측 범위</span><strong>1~5일</strong><small>3시간 자료 일별 요약</small></div><div class="metric"><span>비밀키</span><strong>서버 전용</strong><small>HTML·응답 미노출</small></div></div>
+      <div class="notice"><strong>실습 구현 포인트</strong><p>Claude가 도구 이름과 인수를 선택하지만, 실제 API 실행과 인수 검증은 Worker가 담당합니다. 외부 API 결과는 신뢰할 수 없는 데이터로 취급해 도구 결과 블록으로만 전달합니다.</p></div>
+
+    </section>
+    <section class="assignment-view" role="tabpanel" id="weather-panel-requirements" aria-labelledby="weather-tab-requirements" data-assignment="weather" data-assignment-panel="requirements" hidden>
+
+      <h3>과제 목표와 입력 범위</h3>
+      <details class="requirements-details" open><summary><span><span class="requirements-icon" aria-hidden="true">✓</span>과제 요구사항</span><small>펼쳐보기</small></summary><div class="requirements-body"><ul><li>현재 날씨를 조회하는 get_current_weather 예제를 유지한다.</li><li>향후 N일 예보를 조회하는 get_n_day_weather_forecast 도구를 추가한다.</li><li>사용자가 자연어로 입력한 도시와 예측 일수를 Claude가 도구 인수로 구성한다.</li><li>Worker가 OpenWeatherMap API를 실행하고 그 결과를 Claude에 다시 전달한다.</li><li>최종 답변은 실제 날씨 데이터만 사용하며 입력에 없는 값을 만들지 않는다.</li></ul><p class="requirements-note">실습 슬라이드와 OpenWeatherMap_WP_extension_revised.ipynb의 확장 요구사항을 HTML·Worker 구조로 옮긴다.</p></div></details>
+      <div class="data-intro"><div><span>INPUT</span><strong>도시 · 현재/예보 질문 · 1~5일 · 온도 단위</strong></div><p>브라우저에는 API 키를 두지 않으며, 같은 출처의 Worker가 Claude 도구 사용과 OpenWeatherMap 호출을 담당합니다.</p></div>
+      <h3>처리 순서</h3>
+      <ol class="steps"><li>질문과 기본 일수 입력</li><li>Claude가 날씨 도구 선택</li><li>도시·일수 서버 검증</li><li>OpenWeatherMap 실제 조회</li><li>Claude가 결과를 한국어로 설명</li></ol>
+      <div class="notice"><strong>데이터 안내</strong><p>예보는 OpenWeatherMap의 5일·3시간 간격 자료를 날짜별로 요약합니다. 실제 관측·발표 시각과 현지 상황에 따라 값이 달라질 수 있습니다.</p></div>
+
+    </section>
+
+    </section>
+    <footer>AI응용 1조 · Sites Worker, Claude API, D1과 OpenWeatherMap을 사용합니다.</footer>
   </main>
   <script>
     (() => {
@@ -441,8 +531,34 @@
           ?.dataset.assignmentTab || '';
       }
       const route = location.hash.slice(1).split('/');
-      const initial = route[0] || 'team';
-      panels.forEach(panel => panel.hidden = panel.dataset.panel !== 'team');
+      const initial = panels.some(panel => panel.dataset.panel === route[0]) ? route[0] : 'team';
+      const primaryTabs = [...document.querySelectorAll('[data-tab]')];
+      function activatePanel(key, focus = false, updateHash = true) {
+        const validKey = panels.some(panel => panel.dataset.panel === key) ? key : 'team';
+        panels.forEach(panel => panel.hidden = panel.dataset.panel !== validKey);
+        primaryTabs.forEach(tab => {
+          const selected = tab.dataset.tab === validKey;
+          tab.setAttribute('aria-selected', selected ? 'true' : 'false');
+          tab.tabIndex = selected ? 0 : -1;
+          if (selected && focus) tab.focus();
+        });
+        if (updateHash) history.replaceState(null, '', '#' + validKey + '/' + (selectedAssignmentView(validKey) || 'results'));
+      }
+      primaryTabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => activatePanel(tab.dataset.tab));
+        tab.addEventListener('keydown', event => {
+          let next = null;
+          if (event.key === 'ArrowRight') next = (index + 1) % primaryTabs.length;
+          if (event.key === 'ArrowLeft') next = (index - 1 + primaryTabs.length) % primaryTabs.length;
+          if (event.key === 'Home') next = 0;
+          if (event.key === 'End') next = primaryTabs.length - 1;
+          if (next !== null) {
+            event.preventDefault();
+            activatePanel(primaryTabs[next].dataset.tab, true);
+          }
+        });
+      });
+      activatePanel(initial, false, false);
 
       const assignmentTabs = [...document.querySelectorAll('[data-assignment-tab]')];
       const assignmentPanels = [...document.querySelectorAll('[data-assignment-panel]')];
@@ -486,6 +602,157 @@
           : groupTabs.some(tab => tab.dataset.assignmentTab === savedView) ? savedView : 'results';
         activateAssignment(taskKey, initialView, false, false);
       });
+
+      const weatherForm = document.getElementById('weatherForm');
+      if (weatherForm) {
+        const weatherQuestion = document.getElementById('weatherQuestion');
+        const weatherDays = document.getElementById('weatherDays');
+        const weatherUnit = document.getElementById('weatherUnit');
+        const weatherSubmit = document.getElementById('weatherSubmit');
+        const weatherResult = document.getElementById('weatherResult');
+        const weatherResultMode = document.getElementById('weatherResultMode');
+        const weatherResultTitle = document.getElementById('weatherResultTitle');
+        const weatherAnswer = document.getElementById('weatherAnswer');
+        const weatherTool = document.getElementById('weatherTool');
+        const weatherCards = document.getElementById('weatherCards');
+        const weatherMeta = document.getElementById('weatherMeta');
+        const weatherError = document.getElementById('weatherError');
+        const weatherErrors = {
+          city_required: '도시를 포함해 질문해 주세요.',
+          invalid_weather_request: '질문, 예측 일수 또는 온도 단위를 확인해 주세요.',
+          weather_location_not_found: '도시를 찾지 못했습니다. 도시명과 국가를 함께 입력해 보세요.',
+          weather_upstream_timeout: '날씨 서버의 응답이 늦습니다. 잠시 후 다시 시도해 주세요.',
+          weather_upstream_error: '날씨 데이터를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.',
+          weather_tool_failed: '날씨 도구 실행 중 문제가 발생했습니다.',
+          rate_limit_exceeded: '요청이 많습니다. 1분 후 다시 시도해 주세요.',
+          daily_budget_exhausted: '오늘의 Claude 사용 한도에 도달했습니다.',
+          server_not_configured: '배포 서버에 날씨 API 설정이 필요합니다.',
+          weather_server_error: '날씨 기능을 처리하지 못했습니다.'
+        };
+
+        function setWeatherLoading(loading) {
+          weatherSubmit.disabled = loading;
+          weatherSubmit.textContent = loading ? '조회 중…' : '날씨 확인';
+          weatherResult.classList.toggle('loading', loading);
+          weatherQuestion.setAttribute('aria-busy', loading ? 'true' : 'false');
+          if (loading) {
+            weatherError.hidden = true;
+            weatherResultMode.textContent = 'Claude 도구 선택 중';
+            weatherAnswer.textContent = '질문을 분석하고 OpenWeatherMap 데이터를 불러오고 있습니다.';
+          }
+        }
+
+        function dateLabel(value) {
+          const date = new Date(value + 'T00:00:00Z');
+          if (Number.isNaN(date.getTime())) return value;
+          return new Intl.DateTimeFormat('ko-KR', { month:'numeric', day:'numeric', weekday:'short', timeZone:'UTC' }).format(date);
+        }
+
+        function cardElement(item, unitLabel, current = false) {
+          const article = document.createElement('article');
+          const label = document.createElement('span');
+          const value = document.createElement('strong');
+          const condition = document.createElement('small');
+          const detail = document.createElement('p');
+          detail.className = 'weather-card-detail';
+          if (current) {
+            label.textContent = '현재 날씨';
+            value.textContent = Number(item.temperature).toFixed(1) + unitLabel;
+            condition.textContent = item.description || '상태 정보 없음';
+            detail.textContent = '체감 ' + Number(item.feels_like).toFixed(1) + unitLabel + ' · 습도 ' + item.humidity + '% · 바람 ' + item.wind_speed + (unitLabel === '°C' ? 'm/s' : 'mph');
+          } else {
+            label.textContent = dateLabel(item.date);
+            value.textContent = Number(item.min).toFixed(0) + ' / ' + Number(item.max).toFixed(0) + unitLabel;
+            condition.textContent = item.description || '상태 정보 없음';
+            detail.textContent = '강수 가능성 ' + item.precipitation_probability + '% · 습도 ' + item.humidity + '%';
+          }
+          article.append(label, value, condition, detail);
+          return article;
+        }
+
+        function renderWeather(data) {
+          weatherError.hidden = true;
+          weatherResultMode.textContent = data.kind === 'clarification' ? '추가 정보 필요' : '실시간 API 결과';
+          weatherResultTitle.textContent = data.location || '날씨 질문 확인';
+          weatherAnswer.textContent = data.answer || '날씨 결과를 확인했습니다.';
+          weatherTool.textContent = data.tool || '도구 호출 전';
+          weatherCards.replaceChildren();
+          const unitLabel = data.unit === 'imperial' ? '°F' : '°C';
+          if (data.weather?.kind === 'current' && data.weather.current) {
+            weatherCards.append(cardElement(data.weather.current, unitLabel, true));
+          } else if (data.weather?.kind === 'forecast' && Array.isArray(data.weather.days)) {
+            data.weather.days.forEach(item => weatherCards.append(cardElement(item, unitLabel, false)));
+          } else {
+            const article = document.createElement('article');
+            const label = document.createElement('span');
+            const value = document.createElement('strong');
+            const detail = document.createElement('small');
+            label.textContent = '입력 확인';
+            value.textContent = '도시가 필요합니다';
+            detail.textContent = '예: 서울 지금 날씨 알려줘';
+            article.append(label, value, detail);
+            weatherCards.append(article);
+          }
+          weatherMeta.textContent = data.weather
+            ? '출처: OpenWeatherMap · 조회 ' + new Date(data.weather.fetched_at).toLocaleString('ko-KR') + ' · 예보는 실제 상황과 다를 수 있습니다.'
+            : '도시를 포함한 질문을 입력하면 실제 날씨 데이터를 조회합니다.';
+        }
+
+        async function requestWeather() {
+          const message = weatherQuestion.value.trim();
+          if (message.length < 2) {
+            weatherError.textContent = '도시와 함께 날씨 질문을 입력해 주세요.';
+            weatherError.hidden = false;
+            weatherQuestion.focus();
+            return;
+          }
+          setWeatherLoading(true);
+          try {
+            const response = await fetch('/api/weather-chat', {
+              method: 'POST',
+              headers: { 'Content-Type':'application/json' },
+              body: JSON.stringify({
+                message,
+                forecast_days: Number(weatherDays.value),
+                unit: weatherUnit.value
+              })
+            });
+            let data;
+            try { data = await response.json(); } catch (error) { data = null; }
+            if (!response.ok || !data) {
+              const code = data?.error || (response.status === 501 || response.status === 404 ? 'server_not_configured' : 'weather_server_error');
+              throw new Error(weatherErrors[code] || '날씨 요청을 완료하지 못했습니다.');
+            }
+            renderWeather(data);
+          } catch (error) {
+            weatherResultMode.textContent = '조회 실패';
+            weatherAnswer.textContent = '기존 실행 예시는 유지됩니다. 아래 안내를 확인해 주세요.';
+            weatherError.textContent = error instanceof Error ? error.message : '날씨 요청을 완료하지 못했습니다.';
+            weatherError.hidden = false;
+          } finally {
+            setWeatherLoading(false);
+          }
+        }
+
+        weatherForm.addEventListener('submit', event => {
+          event.preventDefault();
+          requestWeather();
+        });
+        weatherQuestion.addEventListener('keydown', event => {
+          if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            weatherForm.requestSubmit();
+          }
+        });
+        document.querySelectorAll('[data-weather-example]').forEach(button => {
+          button.addEventListener('click', () => {
+            weatherQuestion.value = button.dataset.weatherExample;
+            const match = button.dataset.weatherExample.match(/([1-5])일/);
+            if (match) weatherDays.value = match[1];
+            weatherQuestion.focus();
+          });
+        });
+      }
 
       const datasetTabs = [...document.querySelectorAll('[data-dataset-tab]')];
       const datasetPanels = [...document.querySelectorAll('[data-dataset-panel]')];
