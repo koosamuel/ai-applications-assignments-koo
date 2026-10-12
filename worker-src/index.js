@@ -248,7 +248,7 @@ const WEATHER_TOOLS = [
       type: "object",
       properties: {
         location: { type: "string", description: "City or place name, optionally followed by state and country." },
-        forecast_days: { type: "integer", minimum: 1, maximum: 5 },
+        forecast_days: { type: "integer", description: "Number of forecast days from 1 to 5. The server validates this range." },
         unit: { type: "string", enum: ["metric", "imperial"] },
       },
       required: ["location", "forecast_days", "unit"],
