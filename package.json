@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "build": "./scripts/build-static.sh",
+    "test": "npm run build && node --test tests/integrated-rag-kiosk.test.mjs",
     "db:generate": "drizzle-kit generate"
   },
   "dependencies": {

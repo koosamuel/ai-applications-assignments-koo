@@ -1,10 +1,12 @@
 # AI응용 1조 인터랙티브 웹
 
-StepUp English 회화 코치와 실습 7 OpenWeatherMap Function Calling을 함께 실행하는 사이트다. 브라우저는 같은 출처의 Sites Worker API만 호출한다.
+StepUp English 회화 코치, 실습 7·8 OpenWeatherMap, 실습 10 웹 리포트, RAG 카페 Kiosk를 함께 실행하는 사이트다. 브라우저는 같은 출처의 Sites Worker API만 호출한다.
 
 현재 화면은 대화를 첫 과업으로 배치하고, 자동 높이 입력창·Enter 전송·Shift+Enter 줄바꿈·600자 카운터·시나리오별 완성 예문·CEFR 진행 표시를 제공한다. `A2→B1 여행`, `C1 사회 이슈`, `명령어 테스트` 중 하나를 선택해 세션을 열 수 있으며, 여행 시나리오는 여섯 번째 답변부터 B1형 예문으로 전환한다. 복사한 도움 예문도 영어 답변 수에는 포함하지만 `assisted=true`로 구분하고 CEFR 근거에는 독립 답변의 절반 가중치를 적용한다. `전체 자동 테스트`는 세 세션을 한 번에 실행하고 n=5, 10, 15, 20 평가·응답시간·대체 응답·명령어 결과를 기록한 뒤 최종 결과문을 작성한다. 결과는 개인정보 없이 Markdown 요약과 JSON 전체 기록으로 내려받을 수 있다.
 
 `실습 7 · 날씨` 탭에서는 도시와 기간을 자연어로 입력한다. Claude가 `get_current_weather` 또는 `get_n_day_weather_forecast`를 선택하고, Worker가 OpenWeatherMap의 지오코딩·현재 날씨·5일/3시간 예보 API를 호출한 뒤 결과를 다시 Claude에 전달한다.
+
+`RAG · 카페 Kiosk` 탭은 15개 메뉴와 옵션 가격을 검색 근거로 사용한다. 짧은 후속 응답의 문맥 유지, 2잔 주문 후 1잔 취소, 옵션 포함 가격의 서버 계산, 주문 확정을 결정적 로직으로 우선 처리한다. 피드백 탭은 서영·서진·지희님의 반영 내역을 한 블록에 모으고, 이름과 내용만 입력하는 검토창·상태 이력·JSON/CSV/Markdown 로그를 제공한다.
 
 ```text
 생성 스크립트 → 팀과제·실습 7 HTML → Worker 번들 → Sites 배포
@@ -16,7 +18,7 @@ StepUp English 회화 코치와 실습 7 OpenWeatherMap Function Calling을 함�
 ## 구조
 
 - `index.html`: 생성된 팀과제 화면
-- `worker-src/index.js`: 정적 파일 제공, `/api/health`, `/api/english-coach`, `/api/weather-chat`
+- `worker-src/index.js`: 정적 파일 제공, 영어 코치·날씨·웹 리포트·RAG Kiosk API
 - `db/schema.ts`, `drizzle/`: D1 사용량·비용·속도 제한 스키마와 마이그레이션
 - `scripts/build-worker.mjs`: HTML·매니페스트·서비스워커를 Worker 모듈에 포함
 - `.openai/hosting.json`: Sites 프로젝트와 D1 바인딩 설정
@@ -65,6 +67,8 @@ npm run build
 - `GET /api/health`: 키와 D1 연결 상태 확인
 - `POST /api/english-coach`: 현재 회화 메시지 한 건만 Claude에 전달하고 영어 답변·자연스러운 한국어 안내·단계별 답변 도움을 구조화해 반환
 - `POST /api/weather-chat`: 질문과 기본 예측 일수를 Claude에 전달하고, 선택된 날씨 도구를 서버에서 실행한 뒤 자연어 요약과 구조화된 날씨 데이터를 반환
+- `GET /api/menu`: 15개 메뉴와 사이즈별 가격·옵션 추가금 반환
+- `POST /api/rag-kiosk`: 검색 근거, 최근 대화, 장바구니를 사용해 추천·비교·주문 결과 반환
 
 브라우저는 배포 도메인의 같은 출처 API만 사용한다. CEFR 평가용 최근 답변 묶음은 서버로 보내지 않고 브라우저 안에서 처리한다. 서버는 Origin, 요청 크기, 메시지 역할·순서·길이, 수준·옵션 타입을 검증한다.
 
@@ -72,8 +76,9 @@ npm run build
 
 ```bash
 node --check worker-src/index.js
+npm test
 npm run build
 git diff --check
 ```
 
-배포 후 `/api/health`가 `ok: true`와 `features.weather: true`를 반환하는지 확인한다. 코치 API가 영어 응답·한국어 해석·잠정 수준을 반환하는지, 날씨 API가 현재 날씨와 1~5일 예보를 각각 반환하는지, D1 원장에 질문 내용 없이 사용량만 기록되는지도 확인한다.
+배포 후 `/api/health`가 `ok: true`와 각 기능 플래그를 반환하는지 확인한다. 코치 API가 영어 응답·한국어 해석·잠정 수준을 반환하는지, 날씨 API가 현재 날씨와 1~5일 예보를 각각 반환하는지, RAG Kiosk 회귀 테스트가 4/4 통과하는지, D1 원장에 질문 내용 없이 사용량만 기록되는지도 확인한다.
